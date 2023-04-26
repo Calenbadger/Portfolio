@@ -1,0 +1,2325 @@
+---
+title: "Bulk RNAseq Analysis"
+author: "Calen Badger"
+date: "7/20/2022"
+output: html_document
+---
+
+### Packages & Functions
+```{r}
+# -------------
+# Packages
+# Functions
+# -------------
+source("/data/cbadger/RNASeq_Functions.R")
+```
+
+### Inputs
+```{r}
+# --------------
+# FC0 BHP005
+# All Comps
+# --------------
+  # Projectdir: RStudio Workbench Directory for the Project, containing Inputs/ directory
+read.inputs(projectdir="CABA-RNAseq-N247",
+            projectname="FC0BHP005",
+            inputdir="Inputs/FC0BHP005",
+            basepath="/data/cbadger/",
+            filenames=NULL,
+            samplefile="project1_sample_anno_v3.txt")
+
+# --------------
+# FC2 BHP005
+# All Comps
+# --------------
+  # Projectdir: RStudio Workbench Directory for the Project, containing Inputs/ directory
+read.inputs(projectdir="CABA-RNAseq-N247",
+            projectname="Project1FC2BHP005",
+            inputdir="Inputs/FC2BHP005",
+            basepath="/data/cbadger/",
+            filenames=NULL,
+            samplefile="Cpd1_RefCpd_sample_anno_v3.txt")
+
+# --------------
+# Project1 FC0 BHP005
+# Dose Effect
+# --------------
+read.inputs(projectdir="CABA-RNAseq-N247",
+            projectname="DoseFC0BHP005",
+            inputdir="Inputs/DoseFC0BHP005",
+            basepath="/data/cbadger/",
+            filenames=NULL)
+
+# --------------
+# Project1 FC0 BHP005
+# Trt Direct
+# --------------
+read.inputs(projectdir="CABA-RNAseq-N247",
+            projectname="TrtFC0BHP005",
+            inputdir="Inputs/TrtFC0BHP005",
+            basepath="/data/cbadger/",
+            filenames=NULL)
+
+# --------------
+# Project1 FC0 BHP005
+# Drug Comps
+# --------------
+# Merged Anno
+Project1FC0BHP005.merged.anno.tissue1.trt.d19.high <- Project1FC0BHP005.merged.anno[,c(76:80, 126:130, 191)]
+Project1FC0BHP005.merged.anno.tissue2.trt.d19.high <- Project1FC0BHP005.merged.anno[,c(6:10, 36:40, 191)]
+# Sigs
+Project1FC0BHP005.sigs.tissue1.trt.d19.high <- Project1FC0BHP005.sigs[,c(1, 17, 27)]
+Project1FC0BHP005.sigs.tissue2.trt.d19.high <- Project1FC0BHP005.sigs[,c(1, 3, 9)]
+
+# --------------
+# Project1 FC0 BHP005
+# Drug vs Temp
+# --------------
+# Merged Anno
+# Day19-Day16, Cpd1High-Day19
+Project1FC0BHP005.merged.anno.tissue1.Cpd1h.d19.d16 <- Project1FC0BHP005.merged.anno[,c(151:155, 76:80, 191)]
+# Day19-Day16, RefCpdHigh-Day19
+Project1FC0BHP005.merged.anno.tissue1.RefCpdh.d19.d16 <- Project1FC0BHP005.merged.anno[,c(181:185, 126:130, 191)]
+# Day18-Day16, Cpd1High-Day18
+Project1FC0BHP005.merged.anno.tissue1.Cpd1h.d18.d16 <- Project1FC0BHP005.merged.anno[,c(131:135, 71:75, 191)]
+# Day18-Day16, RefCpdHigh-Day18
+Project1FC0BHP005.merged.anno.tissue1.RefCpdh.d18.d16 <- Project1FC0BHP005.merged.anno[,c(161:165, 121:125, 191)]
+
+# Sigs
+# Cpd1High-Day19, Day19-Day16
+Project1FC0BHP005.sigs.tissue1.Cpd1h.d19.d16 <- Project1FC0BHP005.sigs[,c(1, 17, 32)]
+# RefCpdHigh-Day19, Day19-Day16
+Project1FC0BHP005.sigs.tissue1.RefCpdh.d19.d16 <- Project1FC0BHP005.sigs[,c(1, 27, 38)]
+# Cpd1High-Day18, Day18-Day16
+Project1FC0BHP005.sigs.tissue1.Cpd1h.d18.d16 <- Project1FC0BHP005.sigs[,c(1, 16, 28)]
+# RefCpdHigh-Day18, Day18-Day16
+Project1FC0BHP005.sigs.tissue1.RefCpdh.d18.d16 <- Project1FC0BHP005.sigs[,c(1, 26, 34)]
+
+# --------------
+# Project1 FC0 BHP005
+# Tissue Comps
+# --------------
+# Sigs
+Project1FC0BHP005.sigs.tissue1.tissue2.Cpd1.d19.high <- Project1FC0BHP005.sigs[,c(1, 17, 3)]
+Project1FC0BHP005.sigs.tissue1.tissue2.RefCpd.d19.high <- Project1FC0BHP005.sigs[,c(1, 27, 9)]
+
+# --------------
+# Project1 FC0 BHP005
+# Dose Effect
+# --------------
+DoseFC0BHP005.merged.anno.tissue1.Cpd1.d19 <- DoseFC0BHP005.merged.anno[,c(31:35, 26:30, 16:20, 46)]
+DoseFC0BHP005.merged.anno.tissue2.Cpd1.d19 <- DoseFC0BHP005.merged.anno[,c(11:15, 6:10, 1:5, 46)]
+```
+
+### Inputs: Other Projects
+```{r}
+# -------------
+# Project2
+# FC0BHP02
+# -------------
+# Human
+read.inputs(projectdir="CABA-Project2-RNAseq-N16",
+            projectname="HumanProject2FC0BHP02",
+            inputdir="Inputs/FC0BHP02_human",
+            basepath="/data/cbadger/",
+            filenames=NULL,
+            samplefile="project2_sample_anno_human.txt")
+
+# ------------
+# TL vs TNL
+# FC2 BHP005
+# ------------
+# Merged
+TL.TNL.merged <- read.delim(file="/data/cbadger/CABA-RNAseq-N247/Inputs/TL-vs-TNL/gene.results.merged.count.DESeq2.Wald.FC1.BH.P0.05.txt",quote="",header=T,sep="\t",row.names=1)
+TL.TNL.merged <- na.omit(TL.TNL.merged)
+
+# --------------
+# Project3 N24 (Cpd4)
+# FC2 BHP005
+# --------------
+read.inputs(projectdir="JUYI_Project3-RNASeq",
+            projectname="Project3FC2BHP005",
+            inputdir="Inputs/FC2BHP005",
+            basepath="/data/cbadger/",
+            filenames=NULL,
+            samplefile="project3_samples_anno_v3.txt")
+```
+
+### Human/Mouse Conversion
+```{r}
+# Ensembl Gene-name Conversion
+humanmouse <- read.delim("/data/cbadger/Ensembl/human_mouse_one2one.txt",quote="",header=T,sep="\t",row.names=1)
+
+human.mouse.genes <- read.csv("/data/cbadger/Ensembl/human_mouse_one2one_ensembl_geneid.csv", header = T)
+```
+
+### Venn FC0BHP005: Drug Comparison
+```{r}
+# ------------
+# Inputs
+# ------------
+# Project1 FC0 BHP005
+make.venn.sets(sigs=Project1FC0BHP005.sigs.tissue1.trt.d19.high, allsets=T, upsets=F, downsets=F, files=F)
+make.venn.sets(sigs=Project1FC0BHP005.sigs.tissue2.trt.d19.high, allsets=T, upsets=F, downsets=F, files=F)
+
+# ------------
+# Venn 2way
+# ------------
+# tissue1 Drugs (FC0 BHP005)
+venn.draw(set1=Project1FC0BHP005.tissue1Cpd1110mgD19pre.tissue1Vehicle1D19pre.set,
+          set2=Project1FC0BHP005.tissue1RefCpd50mgD19pre.tissue1Vehicle2D19pre.set,
+          name1="Cpd1 110mg Effect\n(tissue1,D19pre,FC0,BHP005)",
+          name2="RefCpd 5.0mg Effect\n(tissue1,D19pre,FC0,BHP005)",
+          col1="#f2b35b", col2="#388eb9")
+
+# tissue2 Drugs (FC0 BHP005)
+venn.draw(set1=Project1FC0BHP005.tissue2Cpd1110mgD19pre.tissue2Vehicle1D19pre.set,
+          set2=Project1FC0BHP005.tissue2RefCpd50mgD19pre.tissue2Vehicle2D19pre.set,
+          name1="Cpd1 110mg Effect\n(tissue2,D19pre,FC0,BHP005)",
+          name2="RefCpd 5.0mg Effect\n(tissue2,D19pre,FC0,BHP005)",
+          col1="#f2b35b", col2="#388eb9")
+
+# -----------
+# Venn Files
+# -----------
+venn.path <- "/data/cbadger/CABA-RNAseq-N247/Venn/FC0BHP005/Trt_Comp/"
+
+# tissue1 Drugs (FC0 BHP005)
+file.path <- paste0(venn.path,"Cpd1.110mg-vs-RefCpd.5.0mg_tissue1D19preFC0BHP005_Venn.png")
+venn.file(set1=Project1FC0BHP005.tissue1Cpd1110mgD19pre.tissue1Vehicle1D19pre.set,
+          set2=Project1FC0BHP005.tissue1RefCpd50mgD19pre.tissue1Vehicle2D19pre.set,
+          name1="Cpd1 110mg Effect\n(tissue1,D19pre,FC0,BHP005)",
+          name2="RefCpd 5.0mg Effect\n(tissue1,D19pre,FC0,BHP005)",
+          col1="#f2b35b", col2="#388eb9",
+          filepath=file.path)
+
+# tissue2 Drugs (FC0 BHP005)
+file.path <- paste0(venn.path,"Cpd1.110mg-vs-RefCpd.5.0mg_tissue2D19preFC0BHP005_Venn.png")
+venn.file(set1=Project1FC0BHP005.tissue2Cpd1110mgD19pre.tissue2Vehicle1D19pre.set,
+          set2=Project1FC0BHP005.tissue2RefCpd50mgD19pre.tissue2Vehicle2D19pre.set,
+          name1="Cpd1 110mg Effect\n(tissue2,D19pre,FC0,BHP005)",
+          name2="RefCpd 5.0mg Effect\n(tissue2,D19pre,FC0,BHP005)",
+          col1="#f2b35b", col2="#388eb9",
+          filepath=file.path)
+
+# tissue2 Drugs (FC0 BHP005) v2 (Limma venn)
+library(limma)
+# Input
+Project1FC0BHP005.sigs.tissue2.trt.d19.high <- Project1FC0BHP005.sigs[,c(1, 3, 9)]
+# Path
+venn.path <- "/data/cbadger/CABA-RNAseq-N247/Venn/FC0BHP005/Trt_Comp/"
+# Venn File
+png(filename=paste0(venn.path, "Cpd1.110mg-vs-RefCpd.5.0mg_tissue2D19preFC0BHP005_venn_v2.png"), width = 560, height = 480)
+vennDiagram(object=Project1FC0BHP005.sigs.tissue2.trt.d19.high[,c(2,3)],
+            include=c("up","down"),counts.col = c("red","blue"),
+            names=c("Cpd1H-vs-Veh1\n(tissue2,D19)\n","RefCpdH-vs-Veh2\n(tissue2,D19)\n"))
+dev.off()
+```
+
+### Scatter FC0BHP005: Drug Comparison tissue2 BothTissue Shapes, Public1 Bold
+```{r}
+# ----------------
+# Input
+# ----------------
+make.scatter.input(data=Project1FC0BHP005.merged.anno.tissue2.trt.d19.high, project="FC0BHP005", dir="", files=F)
+myset <- FC0BHP005.tissue2Cpd1110mgD19pre.tissue2Vehicle1D19pre.vs.tissue2RefCpd50mgD19pre.tissue2Vehicle2D19pre.scatterset
+myset <- as.data.frame(myset)
+scatter.path <- "/data/cbadger/CABA-RNAseq-N247/Scatter/FC0BHP005/"
+
+# ----------------
+# Gene Labels
+# ----------------
+# Inflam & ECM, Overlapping with Public1
+inf.tissue2.all <- c("Adora1","Bdkrb1","C1ra","C1s2","Ccl2","Ccl21a",
+                 "Ccl7","Ccr5","Chil1","Chil3","Chst4","Clu",
+                 "Csf1","Csf2rb2","Cxcl1","Cxcl2","Cxcl3",
+                 "Cxcl5","F13a1","Gm13304","Hp","Icam1",
+                 "Il11","Il1b","Il6","Il6st","Itgam","Itgb3",
+                 "Lcn2","Mmp13","Mmp3","Naip1","Nos2","Reg3b",
+                 "S100a8","S100a9","Selp","Serpina3n","Sting1","Timp1")
+ecm.tissue2.all <- c("Adamts15","Adamts2","Adamts4","Adamtsl1",
+                 "Capn5","Cav1","Cav2","Ccdc80","Cgnl1","Col4a4",
+                 "Crtap","Dcn","Dpt","Emp2","Fbln2","Fgf2","Gas7",
+                 "Ghrl","Grem1","Gsn","Icam1","Itga5","Itgb3",
+                 "Krt14","Krt7","Loxl1","Ltbp3","Ltbp4","Lum",
+                 "Mfap5","Mmp10","Mmp13","Mmp3","Mmp8","Pcolce",
+                 "Pcolce2","Ptx3","Rnd1","Scx","Slc39a8","Sorbs3",
+                 "Sparc","Spock2","Sulf1","Timp1","Tnfrsf11b",
+                 "Trf","Vill","Vim","Vit","Vtn")
+tissue2.genes <- c(inf.tissue2.all, ecm.tissue2.all)
+Public1 <- c("Cxcl2","Timp1","Mt1","Ttr","Npm1","Il1a","Tgm1",
+            "Apol11a","Clca5","Mmp3","S100a9","Mmp10","Plat",
+            "Mgp","Serpina3n","Cxcl6","Mmp12","Plet1","Ccl2",
+            "Ctsl","Ripk3","Ccl3","Adm","Ifit3","C3","Anxa1",
+            "Tnip3","Prss22","Lcn2","Tifa","Ccl7","Il1b","Mmp13","F3")
+tissue2.Public1 <- intersect(tissue2.genes, Public1)
+selgenes <- c(tissue2.Public1, "Mmp8", "Il6", "S100a8")
+
+# ---------------
+# Gene Shapes
+# ---------------
+# Tissue-Overlap DEGs for RefCpdmethacin
+make.venn.sets(sigs=Project1FC0BHP005.sigs.tissue1.tissue2.RefCpd.d19.high, allsets=T, upsets=F, downsets=F, files=F)
+tissue1.tissue2.RefCpd.intersect <- intersect(Project1FC0BHP005.tissue1RefCpd50mgD19pre.tissue1Vehicle2D19pre.set, Project1FC0BHP005.tissue2RefCpd50mgD19pre.tissue2Vehicle2D19pre.set)
+
+tissue1.tissue2.RefCpd.intersect.df <- Project1FC0BHP005.merged.anno[rownames(Project1FC0BHP005.merged.anno) %in% tissue1.tissue2.RefCpd.intersect,]
+tissue1.tissue2.RefCpd.intersect.genes <- tissue1.tissue2.RefCpd.intersect.df$gene_name
+  # Looks like mostly inflammatory genes
+
+# We want tissue intersection genes bordered
+myset$data.shape <- rep("tissue2Tissue")
+myset$data.shape[rownames(myset) %in% tissue1.tissue2.RefCpd.intersect.genes] <- "BothTissue"
+
+# Custom Shapes
+diff.shapes <- c(19, 17)
+names(diff.shapes) <- c("tissue2Tissue", "BothTissue")
+
+# Custom Colors
+diff.colors <- c("#388eb9","gray","black","#f2b35b")
+# Color Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, "X,Y Both (0)")
+legend <- c(legend, marks[grepl("X,Y Reverse", marks)])
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path,"Cpd1110mg-Vehicle1_vs_RefCpd50mg-Vehicle2_tissue2D19preFC0BHP005_scatter_TESTING.png"),width = 560, height = 480)
+scatter_plot.2(xval=myset[,1], yval=myset[,2],
+             colorby = myset[,3], shapeby = myset[,4],
+             xlim=c(-6,5), ylim=c(-4,5),
+             xlab="Log2FC Cpd1.110mg-vs-Vehicle1\n(Cpd1 High)",
+             ylab="(RefCpd High)\nLog2FC RefCpd.5.0mg-vs-Vehicle2",
+             main="Cpd1 High vs RefCpd High (tissue2,D19pre,FC0,BHP005)         ",
+             na.val=0, na.rm=T,
+             colors=diff.colors, shapes=diff.shapes, repelcol="black",
+             show_labels1=tissue2.Public1, show_labels2=c("Mmp8", "Il6", "S100a8"), labels=rownames(myset),
+             textrepel=F, regress=F, diagline="pos", bold=T)
+dev.off()
+
+# High Res Version
+ggsave(
+  paste0(scatter.path, "Cpd1110mg-Vehicle1_vs_RefCpd50mg-Vehicle2_tissue2D19preFC0BHP005_scatter_shaped_bold_300res_v2.png"),
+  scatter_plot.2(xval=myset[,1], yval=myset[,2], colorby = myset[,3], shapeby = myset[,4],
+              xlim=c(-6,5), ylim=c(-4,5),
+              xlab="Log2FC Cpd1.110mg-vs-Vehicle1\n(Cpd1 High)",
+              ylab="(RefCpd High)\nLog2FC RefCpd.5.0mg-vs-Vehicle2",
+              main="Cpd1 High vs RefCpd High (tissue2,D19pre,FC0,BHP005)         ",
+              na.val=0, na.rm=T,
+              colors=diff.colors, shapes=diff.shapes, repelcol="black",
+              show_labels1=tissue2.Public1, show_labels2=c("Mmp8", "Il6", "S100a8"), labels=rownames(myset),
+              textrepel=F, regress=F, diagline="pos", bold=T, cor=FALSE),
+  width = 8.0,
+  height = 6.3,
+  dpi = 300
+)
+```
+
+### Scatter FC0BHP005: Drug Comparison
+```{r}
+# ----------
+# Inputs
+# ----------
+# Project1 FC0 BHP005
+make.scatter.input(data=Project1FC0BHP005.merged.anno.tissue1.trt.d19.high, project="FC0BHP005", dir="", files=F)
+make.scatter.input(data=Project1FC0BHP005.merged.anno.tissue2.trt.d19.high, project="FC0BHP005", dir="", files=F)
+
+# Default Inputs
+diff.colors <- c("orange","black","red","#62a8df")
+names(diff.colors) <- c("X Only","X,Y Both","X,Y Reverse","Y Only")
+
+# ---------------------------
+# Scatterplots (FC0 BHP005)
+# ---------------------------
+scatter.path <- "/data/cbadger/CABA-RNAseq-N247/Scatter/FC0BHP005/"
+
+# tissue1 Drugs (FC0 BHP005)
+myset <- FC0BHP005.tissue1Cpd1110mgD19pre.tissue1Vehicle1D19pre.vs.tissue1RefCpd50mgD19pre.tissue1Vehicle2D19pre.scatterset
+# Custom Colors
+diff.colors <- c("#388eb9","black","gray","#f2b35b")
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, marks[grepl("X,Y Both", marks)])
+legend <- c(legend, "X,Y Reverse (0)")
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+# Selecting Gene Labels
+prostaglandin <- c("Ptgdr","Ptger2","Ptger4","Fbxo32","Scnn1b","Cyp27b1", "Ptgfr")
+inflammatory <- c("Acod1","Card9","Cd74","Cebpb","Il33","Il6","Mdk","Mmp8","Nlrp3","Ptger4","S100a8","S100a9")
+selgenes <- c(prostaglandin, inflammatory)
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path, "Cpd1110mg-Vehicle1_vs_RefCpd50mg-Vehicle2_tissue1D19preFC0BHP005_scatter_v2.png"), width = 560, height = 480)
+scatter_plot(xval=myset[,1],yval=myset[,2],colorby = myset[,3],
+             xlim=c(-2,6),ylim=c(-2,6),
+             xlab="Log2FC Cpd1110mg-vs-Vehicle1\n(Cpd1 High)",
+             ylab="(RefCpd High)\nLog2FC RefCpd50mg-vs-Vehicle2",
+             main="Cpd1 High vs RefCpd High (tissue1,D19pre,FC0,BHP005)     ",
+             na.val=0,na.rm=T,colors=diff.colors,labels=rownames(myset),
+             show_labels=selgenes,textrepel=F,diagline="pos", regress=F)
+dev.off()
+
+# High Res Version
+ggsave(
+  paste0(scatter.path, "Cpd1110mg-Vehicle1_vs_RefCpd50mg-Vehicle2_tissue1D19preFC0BHP005_scatter_v3_300res.png"),
+  scatter_plot(xval=myset[,1],yval=myset[,2],colorby = myset[,3],
+              xlim=c(-2,6),ylim=c(-2,6),
+              xlab="Log2FC Cpd1110mg-vs-Vehicle1\n(Cpd1 High)",
+              ylab="(RefCpd High)\nLog2FC RefCpd50mg-vs-Vehicle2",
+              main="Cpd1 High vs RefCpd High (tissue1,D19pre,FC0,BHP005)     ",
+              na.val=0,na.rm=T,colors=diff.colors,labels=rownames(myset),
+              show_labels=selgenes,textrepel=F,diagline="pos", regress=F,
+              cor=FALSE),
+  width = 7.8,
+  height = 6.3,
+  dpi = 300
+)
+
+# tissue2 Drugs (FC0 BHP005)
+myset <- FC0BHP005.tissue2Cpd1110mgD19pre.tissue2Vehicle1D19pre.vs.tissue2RefCpd50mgD19pre.tissue2Vehicle2D19pre.scatterset
+# Colors
+diff.colors <- c("orange","black","red","#62a8df")
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, "X,Y Both (0)")
+legend <- c(legend, marks[grepl("X,Y Reverse", marks)])
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+# Selecting Gene Labels
+#bothlist <- rownames(myset)[myset[,3]==legend[2]]
+revlist <- rownames(myset)[myset[,3]==legend[3]]
+inflammatory.tissue2 <- c("Ccl2","Ccl21a","Ccl7","Ccr5","Csf1","Cxcl1","Cxcl2","Cxcl3","Cxcl5","Icam1","Il11","Il1b","Il6","Il6st","Itgam","S100a8","S100a9")
+selgenes <- c(revlist,inflammatory.tissue2)
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path, "Cpd1110mg-Vehicle1_vs_RefCpd50mg-Vehicle2_tissue2D19preFC0BHP005_scatter.png"), width = 560, height = 480)
+scatter_plot(xval=myset[,1],yval=myset[,2],colorby = myset[,3],xlim=c(-8,5),ylim=c(-5,5),xlab="Log2FC Cpd1110mg-vs-Vehicle1\n(Cpd1 High)",ylab="(RefCpd High)\nLog2FC RefCpd50mg-vs-Vehicle2",na.val=0,na.rm=T,main="Cpd1 High vs RefCpd High (tissue2,D19pre,FC0,BHP005)",colors=diff.colors,show_labels=selgenes,labels=rownames(myset),textrepel=T,repelcol="black")
+dev.off()
+
+# ---------------
+# Custom Scatter
+# ---------------
+# tissue2 Drugs (FC0 BHP005)
+scatter.path <- "/data/cbadger/CABA-RNAseq-N247/Scatter/FC0BHP005/"
+
+# Cpd1High-Day19, Day19-Day16
+myset <- FC0BHP005.tissue2Cpd1110mgD19pre.tissue2Vehicle1D19pre.vs.tissue2RefCpd50mgD19pre.tissue2Vehicle2D19pre.scatterset
+# Custom Colors
+diff.colors <- c("#388eb9","gray","black","#f2b35b")
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, "X,Y Both (0)")
+legend <- c(legend, marks[grepl("X,Y Reverse", marks)])
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+# Selecting Gene Labels
+# Inflammatory Pathway DEGs
+inf.tissue2.all <- c("Adora1","Bdkrb1","C1ra","C1s2","Ccl2","Ccl21a","Ccl7","Ccr5","Chil1","Chil3","Chst4","Clu","Csf1","Csf2rb2","Cxcl1","Cxcl2","Cxcl3","Cxcl5","F13a1","Gm13304","Hp","Icam1","Il11","Il1b","Il6","Il6st","Itgam","Itgb3","Lcn2","Mmp13","Mmp3","Naip1","Nos2","Reg3b","S100a8","S100a9","Selp","Serpina3n","Sting1","Timp1")
+# ECM Pathway DEGs
+ecm.tissue2.all <- c("Adamts15","Adamts2","Adamts4","Adamtsl1","Capn5","Cav1","Cav2","Ccdc80","Cgnl1","Col4a4","Crtap","Dcn","Dpt","Emp2","Fbln2","Fgf2","Gas7","Ghrl","Grem1","Gsn","Icam1","Itga5","Itgb3","Krt14","Krt7","Loxl1","Ltbp3","Ltbp4","Lum","Mfap5","Mmp10","Mmp13","Mmp3","Mmp8","Pcolce","Pcolce2","Ptx3","Rnd1","Scx","Slc39a8","Sorbs3","Sparc","Spock2","Sulf1","Timp1","Tnfrsf11b","Trf","Vill","Vim","Vit","Vtn")
+tissue2.genes <- c(inf.tissue2.all, ecm.tissue2.all)
+# Public1 Rat Small Intestine
+Public1 <- c("Cxcl2","Timp1","Mt1","Ttr","Npm1","Il1a","Tgm1","Apol11a","Clca5","Mmp3","S100a9","Mmp10","Plat","Mgp","Serpina3n","Cxcl6","Mmp12","Plet1","Ccl2","Ctsl","Ripk3","Ccl3","Adm","Ifit3","C3","Anxa1","Tnip3","Prss22","Lcn2","Tifa","Ccl7","Il1b","Mmp13","F3")
+  # intersect(tissue2.genes, Public1)
+# Intersection of Public1 with Inflamm/ECM genes
+selgenes <- intersect(tissue2.genes, Public1)
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path,"Cpd1110mg-Vehicle1_vs_RefCpd50mg-Vehicle2_tissue2D19preFC0BHP005_scatter_v2.png"),width = 560, height = 480)
+scatter_plot(xval=myset[,1], yval=myset[,2], colorby = myset[,3],
+             xlim=c(-6,5), ylim=c(-4,5),
+             xlab="Log2FC Cpd1.110mg-vs-Vehicle1\n(Cpd1 High)",
+             ylab="(RefCpd High)\nLog2FC RefCpd.5.0mg-vs-Vehicle2",
+             main="Cpd1 High vs RefCpd High (tissue2,D19pre,FC0,BHP005)         ",
+             na.val=0, na.rm=T,
+             colors=diff.colors, repelcol="black",
+             show_labels=selgenes, labels=rownames(myset),
+             textrepel=F, regress=F, diagline="pos", toplabel=400)
+dev.off()
+
+# High Res Version
+ggsave(
+  paste0(scatter.path, "Cpd1110mg-Vehicle1_vs_RefCpd50mg-Vehicle2_tissue2D19preFC0BHP005_scatter_v3_300res.png"),
+  scatter_plot(xval=myset[,1], yval=myset[,2], colorby = myset[,3],
+              xlim=c(-6,5), ylim=c(-4,5),
+              xlab="Log2FC Cpd1.110mg-vs-Vehicle1\n(Cpd1 High)",
+              ylab="(RefCpd High)\nLog2FC RefCpd.5.0mg-vs-Vehicle2",
+              main="Cpd1 High vs RefCpd High (tissue2,D19pre,FC0,BHP005)         ",
+              na.val=0, na.rm=T,
+              colors=diff.colors, repelcol="black",
+              show_labels=selgenes, labels=rownames(myset),
+              textrepel=F, regress=F, diagline="pos", toplabel=400,
+              cor=FALSE),
+  width = 8.0,
+  height = 6.3,
+  dpi = 300
+)
+```
+
+### Scatter FC0BHP005: Dose Response
+```{r}
+# ----------
+# Inputs
+# ----------
+# Project1 FC0 BHP005
+# Dose Response
+make.scatter.input(data=DoseFC0BHP005.merged.anno.tissue1.Cpd1.d19, project="DoseFC0BHP005", dir="", files=F)
+make.scatter.input(data=DoseFC0BHP005.merged.anno.tissue2.Cpd1.d19, project="DoseFC0BHP005", dir="", files=F)
+
+# Default Inputs
+diff.colors <- c("orange","black","red","#62a8df")
+names(diff.colors) <- c("X Only","X,Y Both","X,Y Reverse","Y Only")
+
+# ---------------------------
+# Scatterplots tissue1 (FC0 BHP005)
+# ---------------------------
+scatter.path <- "/data/cbadger/CABA-RNAseq-N247/Scatter/DoseFC0BHP005/"
+
+# tissue1 Cpd1 Low-vs-Veh High-vs-Veh (FC0 BHP005)
+myset <- DoseFC0BHP005.tissue1Cpd111mgD19pre.tissue1Vehicle1D19pre.vs.tissue1Cpd1110mgD19pre.tissue1Vehicle1D19pre.scatterset
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, marks[grepl("X,Y Both", marks)])
+legend <- c(legend, "X,Y Reverse (0)")
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path, "Cpd111mg-Vehicle1_vs_Cpd1110mg-Vehicle1_tissue1D19preFC0BHP005_scatter.png"), width = 560, height = 460)
+scatter_plot(xval=myset[,1],yval=myset[,2],colorby = myset[,3],xlim=c(-8,8),ylim=c(-8,8),xlab="Log2FC Cpd1.11mg-vs-Vehicle1\n(Cpd1 Low)",ylab="(Cpd1 High)\nLog2FC Cpd1.110mg-vs-Vehicle1",na.val=0,na.rm=T,main="Cpd1 Low vs Cpd1 High (tissue1,D19pre,FC0,BHP005)",colors=diff.colors,show_labels=T,labels=rownames(myset),textrepel=T,toplabel=15,repelcol="black")
+dev.off()
+
+# tissue1 Cpd1 Low-vs-Veh High-vs-Low (FC0 BHP005)
+myset <- DoseFC0BHP005.tissue1Cpd111mgD19pre.tissue1Vehicle1D19pre.vs.tissue1Cpd1110mgD19pre.tissue1Cpd111mgD19pre.scatterset
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, "X,Y Both (0)")
+legend <- c(legend, marks[grepl("X,Y Reverse", marks)])
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path, "Cpd111mg-Vehicle1_vs_Cpd1110mg-Cpd111mg_tissue1D19preFC0BHP005_scatter.png"), width = 560, height = 460)
+scatter_plot(xval=myset[,1],yval=myset[,2],colorby = myset[,3],xlim=c(-10,10),ylim=c(-10,10),xlab="Log2FC Cpd1.11mg-vs-Vehicle1\n(Cpd1 Low)",ylab="(High-v-Low)\nLog2FC Cpd1.110mg-vs-Cpd1.11mg",na.val=0,na.rm=T,main="Cpd1 Low vs Cpd1 High-v-Low (tissue1,D19pre,FC0,BHP005)",colors=diff.colors,show_labels=T,labels=rownames(myset),textrepel=T,toplabel=15,repelcol="black")
+dev.off()
+
+# ---------------------------
+# Scatterplots tissue2 (FC0 BHP005)
+# ---------------------------
+# tissue2 Cpd1 Low-vs-Veh High-vs-Veh (FC0 BHP005)
+myset <- DoseFC0BHP005.tissue2Cpd111mgD19pre.tissue2Vehicle1D19pre.vs.tissue2Cpd1110mgD19pre.tissue2Vehicle1D19pre.scatterset
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- "X Only (0)"
+legend <- c(legend, marks[grepl("X,Y Both", marks)])
+legend <- c(legend, "X,Y Reverse (0)")
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path, "Cpd111mg-Vehicle1_vs_Cpd1110mg-Vehicle1_tissue2D19preFC0BHP005_scatter.png"), width = 560, height = 460)
+scatter_plot(xval=myset[,1],yval=myset[,2],colorby = myset[,3],xlim=c(-8,8),ylim=c(-8,8),xlab="Log2FC Cpd1.11mg-vs-Vehicle1\n(Cpd1 Low)",ylab="(Cpd1 High)\nLog2FC Cpd1.110mg-vs-Vehicle1",na.val=0,na.rm=T,main="Cpd1 Low vs Cpd1 High (tissue2,D19pre,FC0,BHP005)",colors=diff.colors,show_labels=T,labels=rownames(myset),textrepel=T,toplabel=15,repelcol="black")
+dev.off()
+
+# tissue2 Cpd1 Low-vs-Veh High-vs-Low (FC0 BHP005)
+myset <- DoseFC0BHP005.tissue2Cpd111mgD19pre.tissue2Vehicle1D19pre.vs.tissue2Cpd1110mgD19pre.tissue2Cpd111mgD19pre.scatterset
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, "X,Y Both (0)")
+legend <- c(legend, "X,Y Reverse (0)")
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path, "Cpd111mg-Vehicle1_vs_Cpd1110mg-Cpd111mg_tissue2D19preFC0BHP005_scatter.png"), width = 560, height = 460)
+scatter_plot(xval=myset[,1],yval=myset[,2],colorby = myset[,3],xlim=c(-8,8),ylim=c(-8,8),xlab="Log2FC Cpd1.11mg-vs-Vehicle1\n(Cpd1 Low)",ylab="(High-v-Low)\nLog2FC Cpd1.110mg-vs-Cpd1.11mg",na.val=0,na.rm=T,main="Cpd1 Low vs Cpd1 High-Low (tissue2,D19pre,FC0,BHP005)",colors=diff.colors,show_labels=T,labels=rownames(myset),textrepel=T,toplabel=15,repelcol="black")
+dev.off()
+
+```
+
+### Venn FC0BHP005: RefCpd tissue2 vs Public2
+```{r}
+# # -------------------
+# # RefCpd tissue2 DEGs
+# # -------------------
+# make.venn.sets(sigs=Project1FC0BHP005.sigs.tissue2.trt.d19.high, allsets=T, upsets=F, downsets=F, files=F)
+# 
+# # --------------------------
+# # Human Mid-gestation Ileum
+# # RefCpd DEGs
+# # --------------------------
+#   # At least FC 1.3 in RefCpd-vs-Untreated
+# RefCpd.human.ileum <- c("APOC3","CYP3A4","SULT2A1","FBP1","HAND1","CXCL14","APOA1","LIPA","MYH11","LOC648399","APOB","FNDC1","OAT","COL1A2","ENPP7","PDK4","MLLT11","FRZB","COLEC12","GNS","ACTG2","C1S","FMO1","RFTN1","SYT11","STMN2","CABC1","HMGCS2","SPARC","HSD17B14","NBPF8","CDKN1C","APOA4","MAOB","LGMN","CTHRC1","TUBB2B","DCN","H19","PXDN","CTSL1","C5orf13","FLNC","CD36","TPM2","PGM5","ACTA2","NLGN4X","PIK3R2","PBX3","ACADM","PDGFRA","DPYSL3","ZBTB4","ACP5","TEAD2","TSEN34","ITGB2","RPL4","COL3A1","LAMB1","COL4A5","XPNPEP2","PALLD","HSPB1","CDH11","CALD1","CYP2W1","PAH","FSCN1","FTHL3","SLC5A12","FXYD6","RAB17","LAMC1","ARHGDIB","PRPH","CNFN","ARMCX2","ITGB5","CNN3","C10orf58","PENK","PAK2","COL5A2","TPRG1L","SERPINE2","OGG1","BTBD2","ZNF428","DPYSL2","GPR162","CTSB","ALDH1A3","EIF4B","IGFBP5","SPARCL1","VIM","LIMS1","NME3","MFAP4","BGN","AP1S2","VAT1","SC65","DYM","CXCL12","LOC729009","CHES1","PHYH","ZProject136L2","MFGE8","LOC647169","DKK3","ATP6V1B2","VEGFB","GLIPR2","LOC728661","DAB2","MYL9","ERBB3","FTH1","GHR","SGCE","SYNM","EVL","RBPMS2","LAMA4","PLD3","FBN2","CSF1R","PSAP","SPSB3","TTC17","LMO4","FAM38B","TELO2","C5orf33","ZEB2","IGFBP7","G0S2","CADM1","CYBRD1","PDGFD","TAGLN","RHOU","ZAK","MXD4","FTHL11","FTHL2","CD34","SHISA2","NCRNA00219") # 153
+# 
+# RefCpd.human.ileum <- toupper(RefCpd.human.ileum)
+# RefCpd.human.ileum <- as.data.frame(RefCpd.human.ileum)
+# RefCpd.human.ileum <- merge(RefCpd.human.ileum, human.mouse.genes[,c(1,4)], by.x = 1, by.y = 1) # 126
+# RefCpd.human.ileum.set <- paste(RefCpd.human.ileum$Mouse_gene_stable_id, sep="")
+# 
+# # --------
+# # Venn
+# # --------
+# # RefCpd Mouse tissue2 vs RefCpd Human Ileum
+# intersect(Project1FC0BHP005.tissue2RefCpd50mgD19pre.tissue2Vehicle2D19pre.set, RefCpd.human.ileum.set) # 0
+# # Venn Draw
+# venn.draw(set1=Project1FC0BHP005.tissue2RefCpd50mgD19pre.tissue2Vehicle2D19pre.set, set2=RefCpd.human.ileum.set, name1 = "RefCpd Mouse tissue2\n(FC0BHP005,D19pre)", name2 = "RefCpd Human Ileum", col1 = "blue", col2 = "red")
+```
+
+### Venn FC0BHP005: Tissue Comparison for Drugs
+```{r}
+# ------------
+# Inputs
+# ------------
+# Project1 FC0 BHP005
+make.venn.sets(sigs=Project1FC0BHP005.sigs.tissue1.tissue2.Cpd1.d19.high, allsets=T, upsets=F, downsets=F, files=F)
+make.venn.sets(sigs=Project1FC0BHP005.sigs.tissue1.tissue2.RefCpd.d19.high, allsets=T, upsets=F, downsets=F, files=F)
+
+# ------------
+# Venn 2way
+# ------------
+# Cpd1 in tissue1 and tissue2 (FC0 BHP005)
+venn.draw(set1=Project1FC0BHP005.tissue1Cpd1110mgD19pre.tissue1Vehicle1D19pre.set,
+          set2=Project1FC0BHP005.tissue2Cpd1110mgD19pre.tissue2Vehicle1D19pre.set,
+          name1="Cpd1 in tissue1\n(D19pre,FC0,BHP005)",
+          name2="Cpd1 in tissue2\n(D19pre,FC0,BHP005)",
+          col1="#c9578c", col2="#8675ca")
+
+# RefCpd in tissue1 and tissue2 (FC0 BHP005)
+venn.draw(set1=Project1FC0BHP005.tissue1RefCpd50mgD19pre.tissue1Vehicle2D19pre.set,
+          set2=Project1FC0BHP005.tissue2RefCpd50mgD19pre.tissue2Vehicle2D19pre.set,
+          name1="RefCpd in tissue1\n(D19pre,FC0,BHP005)",
+          name2="RefCpd in tissue2\n(D19pre,FC0,BHP005)",
+          col1="#c9578c", col2="#8675ca")
+
+# -----------
+# Venn Files
+# -----------
+venn.path <- "/data/cbadger/CABA-RNAseq-N247/Venn/FC0BHP005/Tissue_Comp/"
+
+# Cpd1 in tissue1 and tissue2 (FC0 BHP005)
+file.path <- paste0(venn.path,"Cpd1.110mg_tissue1-vs-Cpd1.110mg_tissue2_D19preFC0BHP005_Venn.png")
+venn.file(set1=Project1FC0BHP005.tissue1Cpd1110mgD19pre.tissue1Vehicle1D19pre.set,
+          set2=Project1FC0BHP005.tissue2Cpd1110mgD19pre.tissue2Vehicle1D19pre.set,
+          name1="Cpd1 in tissue1\n(D19pre,FC0,BHP005)",
+          name2="Cpd1 in tissue2\n(D19pre,FC0,BHP005)",
+          col1="#c9578c", col2="#8675ca",
+          filepath=file.path)
+
+# RefCpd in tissue1 and tissue2 (FC0 BHP005)
+file.path <- paste0(venn.path,"RefCpd.5.0mg_tissue1-vs-RefCpd.5.0mg_tissue2_D19preFC0BHP005_Venn.png")
+venn.file(set1=Project1FC0BHP005.tissue1RefCpd50mgD19pre.tissue1Vehicle2D19pre.set,
+          set2=Project1FC0BHP005.tissue2RefCpd50mgD19pre.tissue2Vehicle2D19pre.set,
+          name1="RefCpd in tissue1\n(D19pre,FC0,BHP005)",
+          name2="RefCpd in tissue2\n(D19pre,FC0,BHP005)",
+          col1="#c9578c", col2="#8675ca",
+          filepath=file.path)
+
+
+# What are the genes overlapping tissue1 and tissue2 for RefCpdmethacin
+tissue1.tissue2.RefCpd.intersect <- intersect(Project1FC0BHP005.tissue1RefCpd50mgD19pre.tissue1Vehicle2D19pre.set, Project1FC0BHP005.tissue2RefCpd50mgD19pre.tissue2Vehicle2D19pre.set)
+
+tissue1.tissue2.RefCpd.intersect.df <- Project1FC0BHP005.merged.anno[rownames(Project1FC0BHP005.merged.anno) %in% tissue1.tissue2.RefCpd.intersect,]
+tissue1.tissue2.RefCpd.intersect.genes <- tissue1.tissue2.RefCpd.intersect.df$gene_name
+  # Looks like mostly inflammatory genes
+```
+
+### Venn FC0BHP005: Drug vs Temporal
+```{r}
+# ---------
+# Inputs
+# ---------
+# Cpd1High-Day19, Day19-Day16
+make.venn.sets(sigs=Project1FC0BHP005.sigs.tissue1.Cpd1h.d19.d16, allsets=T, upsets=F, downsets=F, files=F)
+# RefCpdHigh-Day19, Day19-Day16
+make.venn.sets(sigs=Project1FC0BHP005.sigs.tissue1.RefCpdh.d19.d16, allsets=T, upsets=F, downsets=F, files=F)
+# Cpd1High-Day18, Day18-Day16
+make.venn.sets(sigs=Project1FC0BHP005.sigs.tissue1.Cpd1h.d18.d16, allsets=T, upsets=F, downsets=F, files=F)
+# RefCpdHigh-Day18, Day18-Day16
+make.venn.sets(sigs=Project1FC0BHP005.sigs.tissue1.RefCpdh.d18.d16, allsets=T, upsets=F, downsets=F, files=F)
+
+
+# ------------
+# Venn Draw
+# ------------
+# Cpd1High-Day19, Day19-Day16
+venn.draw(set1=Project1FC0BHP005.tissue1Cpd1110mgD19pre.tissue1Vehicle1D19pre.set,
+          set2=Project1FC0BHP005.tissue1Vehicle1D19pre.tissue1SHAM1D16.set,
+          name1="Cpd1-High-D19\n(tissue1,FC0BHP005)",
+          name2="D19-vs-D16\n(tissue1,FC0BHP005)",
+          col1="#388eb9", col2="#f2b35b")
+# RefCpdHigh-Day19, Day19-Day16
+venn.draw(set1=Project1FC0BHP005.tissue1RefCpd50mgD19pre.tissue1Vehicle2D19pre.set,
+          set2=Project1FC0BHP005.tissue1Vehicle2D19pre.tissue1SHAM2D16.set,
+          name1="RefCpd-High-D19\n(tissue1,FC0BHP005)",
+          name2="D19-vs-D16\n(tissue1,FC0BHP005)",
+          col1="#c9578c", col2="#8675ca")
+# Cpd1High-Day18, Day18-Day16
+venn.draw(set1=Project1FC0BHP005.tissue1Cpd1110mgD18.tissue1Vehicle1D18.set,
+          set2=Project1FC0BHP005.tissue1Vehicle1D18.tissue1SHAM1D16.set,
+          name1="Cpd1-High-D18\n(tissue1,FC0BHP005)",
+          name2="D18-vs-D16\n(tissue1,FC0BHP005)",
+          col1="#c9578c", col2="#8675ca")
+# RefCpdHigh-Day18, Day18-Day16
+venn.draw(set1=Project1FC0BHP005.tissue1RefCpd50mgD18.tissue1Vehicle2D18.set,
+          set2=Project1FC0BHP005.tissue1Vehicle2D18.tissue1SHAM2D16.set,
+          name1="RefCpd-High-D18\n(tissue1,FC0BHP005)",
+          name2="D18-vs-D16\n(tissue1,FC0BHP005)",
+          col1="#c9578c", col2="#8675ca")
+
+
+# ------------
+# Venn Files
+# ------------
+venn.path <- "/data/cbadger/CABA-RNAseq-N247/Venn/FC0BHP005/Trt_Temporal/"
+
+# Cpd1High-Day19, Day19-Day16
+file.path <- paste0(venn.path,"Cpd1H-vs-D19_vs_D19-vs-D16_tissue1_FC0BHP005_Venn.png")
+venn.file(set1=Project1FC0BHP005.tissue1Cpd1110mgD19pre.tissue1Vehicle1D19pre.set,
+          set2=Project1FC0BHP005.tissue1Vehicle1D19pre.tissue1SHAM1D16.set,
+          name1="Cpd1-High-D19\n(tissue1,FC0BHP005)",
+          name2="D19-vs-D16\n(tissue1,FC0BHP005)",
+          col1="#388eb9", col2="#f2b35b",
+          filepath=file.path)
+# RefCpdHigh-Day19, Day19-Day16
+file.path <- paste0(venn.path,"RefCpdH-vs-D19_vs_D19-vs-D16_tissue1_FC0BHP005_Venn.png")
+venn.file(set1=Project1FC0BHP005.tissue1RefCpd50mgD19pre.tissue1Vehicle2D19pre.set,
+          set2=Project1FC0BHP005.tissue1Vehicle2D19pre.tissue1SHAM2D16.set,
+          name1="RefCpd-High-D19\n(tissue1,FC0BHP005)",
+          name2="D19-vs-D16\n(tissue1,FC0BHP005)",
+          col1="#c9578c", col2="#8675ca",
+          filepath=file.path)
+# Cpd1High-Day18, Day18-Day16
+file.path <- paste0(venn.path,"Cpd1H-vs-D18_vs_D18-vs-D16_tissue1_FC0BHP005_Venn.png")
+venn.file(set1=Project1FC0BHP005.tissue1Cpd1110mgD18.tissue1Vehicle1D18.set,
+          set2=Project1FC0BHP005.tissue1Vehicle1D18.tissue1SHAM1D16.set,
+          name1="Cpd1-High-D18\n(tissue1,FC0BHP005)",
+          name2="D18-vs-D16\n(tissue1,FC0BHP005)",
+          col1="#c9578c", col2="#8675ca",
+          filepath=file.path)
+# RefCpdHigh-Day18, Day18-Day16
+file.path <- paste0(venn.path,"RefCpdH-vs-D18_vs_D18-vs-D16_tissue1_FC0BHP005_Venn.png")
+venn.file(set1=Project1FC0BHP005.tissue1RefCpd50mgD18.tissue1Vehicle2D18.set,
+          set2=Project1FC0BHP005.tissue1Vehicle2D18.tissue1SHAM2D16.set,
+          name1="RefCpd-High-D18\n(tissue1,FC0BHP005)",
+          name2="D18-vs-D16\n(tissue1,FC0BHP005)",
+          col1="#c9578c", col2="#8675ca",
+          filepath=file.path)
+```
+
+### Scatter FC0BHP005: Cpd1, Gestation, TL-TNL
+```{r}
+# -------------
+# TL-TNL Input
+# -------------
+# Positive
+TL.TNL.merged.sigs.pos <- TL.TNL.merged[TL.TNL.merged$Significance..Abs.Log2FC...1.BHP.0.05==1,]
+TL.TNL.merged.sigs.pos.mouse <- merge(TL.TNL.merged.sigs.pos, human.mouse.genes[,c(2,3,4)], by.x = 0, by.y = "Human_gene_stable_id")
+TL.TNL.merged.sigs.pos.mouse$gene_mouse <- capitalize(tolower(TL.TNL.merged.sigs.pos.mouse$gene_mouse))
+
+# Negative
+TL.TNL.merged.sigs.neg <- TL.TNL.merged[TL.TNL.merged$Significance..Abs.Log2FC...1.BHP.0.05==-1,]
+TL.TNL.merged.sigs.neg.mouse <- merge(TL.TNL.merged.sigs.neg, human.mouse.genes[,c(2,3,4)], by.x = 0, by.y = "Human_gene_stable_id")
+TL.TNL.merged.sigs.neg.mouse$gene_mouse <- capitalize(tolower(TL.TNL.merged.sigs.neg.mouse$gene_mouse))
+
+# Scatter Input
+# Cpd1High-Day19, Day19-Day16
+make.scatter.input(data=Project1FC0BHP005.merged.anno.tissue1.Cpd1h.d19.d16, project="Project1FC0BHP005", dir="", files=F)
+myset <- Project1FC0BHP005.tissue1Vehicle1D19pre.tissue1SHAM1D16.vs.tissue1Cpd1110mgD19pre.tissue1Vehicle1D19pre.scatterset
+myset <- as.data.frame(myset)
+View(myset)
+myset$data.marks[rownames(myset) %in% TL.TNL.merged.sigs.pos.mouse$gene_mouse] <- "Pro-Labor"
+myset$data.marks[rownames(myset) %in% TL.TNL.merged.sigs.neg.mouse$gene_mouse] <- "Pro-Quiescence"
+
+# -------------
+# Scatterplots
+# -------------
+scatter.path <- "/data/cbadger/CABA-RNAseq-N247/Scatter/FC0BHP005/"
+# Custom Colors
+diff.colors <- c("#f2b35b","gray", "black","#388eb9", "red", "blue")
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, marks[grepl("X,Y Both", marks)])
+legend <- c(legend, marks[grepl("X,Y Reverse", marks)])
+legend <- c(legend, marks[grepl("Y Only", marks)])
+legend <- c(legend, marks[grepl("Labor", marks)])
+legend <- c(legend, marks[grepl("Qui", marks)])
+names(diff.colors) <- legend
+
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path,"Veh1D19pre-D16_vs_Cpd1110mgD19pre-Veh1D19pre_tissue1_FC0BHP005_TL-TNLcolor_scatter.png"),width = 560, height = 480)
+scatter_plot(xval=myset[,1], yval=myset[,2], colorby = myset[,3],
+             xlim=c(-7,6), ylim=c(-3,6),
+             xlab="Log2FC Veh1.D19-vs-Veh1.D16\n(D19-vs-D16)",
+             ylab="(Cpd1-High-D19)\nLog2FC Cpd1.110mg.D19-vs-Veh1.D19",
+             main="Cpd1High-vs-D19 and D19-vs-D16",
+             na.val=0, na.rm=T,
+             colors=diff.colors, repelcol="black",
+             show_labels=NULL, labels=rownames(myset),
+             textrepel=F, regress=F, diagline="neg",
+             cor=F, repelsize=4, repeldir="both",
+             repelxlim=c(-6.5,5.5), repelylim=c(-2.5,5.5),
+             maxoverlaps=Inf)
+dev.off()
+```
+
+### Scatter FC0BHP005: Drug vs Temporal
+```{r}
+# ---------
+# Inputs
+# ---------
+# Cpd1High-Day19, Day19-Day16
+make.scatter.input(data=Project1FC0BHP005.merged.anno.tissue1.Cpd1h.d19.d16, project="Project1FC0BHP005", dir="", files=F)
+# RefCpdHigh-Day19, Day19-Day16
+make.scatter.input(data=Project1FC0BHP005.merged.anno.tissue1.RefCpdh.d19.d16, project="Project1FC0BHP005", dir="", files=F)
+# Cpd1High-Day18, Day18-Day16
+make.scatter.input(data=Project1FC0BHP005.merged.anno.tissue1.Cpd1h.d18.d16, project="Project1FC0BHP005", dir="", files=F)
+# RefCpdHigh-Day18, Day18-Day16
+make.scatter.input(data=Project1FC0BHP005.merged.anno.tissue1.RefCpdh.d18.d16, project="Project1FC0BHP005", dir="", files=F)
+
+# ----------------
+# TL-vs-TNL Genes
+# for Pro-labor
+# Signature
+# ----------------
+# Mouse Cpd1 and TNL/TL overlapping genes
+ups <- capitalize(tolower(c("DGAT2","IL4R","HAS1","NR4A3","RAB15","TLE3","DDIT4","TGM2")))
+downs <- capitalize(tolower(c("PRKAG2","DTNA","PTPRR","HPGDS","SGMS2","RNF180")))
+feCpd1.tnl.genes <- c(ups,downs)
+
+# -------------------
+# Node Pathway Genes
+# from Cytoscape
+# -------------------
+node.genes <- c("Sox9","Scrib","Fzd5","Celsr1","Tcf7","Ptgdr","Ptger2","Ptger4","Tent5a","Cyp27b1","Pdgfa","Csf3","P2ry2","Myocd","Cyp26a1","Dhrs3","Bco1","Lrat","Il4ra","Nr4a3","Apob")
+  # "Tent5a" not in data rownames
+
+# ---------------
+# Default Inputs
+# ---------------
+diff.colors <- c("orange","black","red","#62a8df")
+names(diff.colors) <- c("X Only","X,Y Both","X,Y Reverse","Y Only")
+
+# -------------
+# Scatterplots
+# -------------
+scatter.path <- "/data/cbadger/CABA-RNAseq-N247/Scatter/FC0BHP005/"
+
+# Cpd1High-Day19, Day19-Day16
+myset <- Project1FC0BHP005.tissue1Vehicle1D19pre.tissue1SHAM1D16.vs.tissue1Cpd1110mgD19pre.tissue1Vehicle1D19pre.scatterset
+# Custom Colors
+diff.colors <- c("#f2b35b","gray","black","#388eb9")
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, marks[grepl("X,Y Both", marks)])
+legend <- c(legend, marks[grepl("X,Y Reverse", marks)])
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+# Selecting Gene Labels
+# bothlist <- rownames(myset)[myset[,3]==legend[2]]
+revlist <- rownames(myset)[myset[,3]==legend[3]]
+# selgenes <- c(bothlist, revlist)
+tnl.rev <- intersect(feCpd1.tnl.genes, revlist)
+selgenes <- c(tnl.rev, node.genes)
+
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path,"Veh1D19pre-D16_vs_Cpd1110mgD19pre-Veh1D19pre_tissue1_FC0BHP005_scatter.png"),width = 560, height = 480)
+scatter_plot(xval=myset[,1], yval=myset[,2], colorby = myset[,3],
+             xlim=c(-7,6), ylim=c(-3,6),
+             xlab="Log2FC Veh1.D19-vs-Veh1.D16\n(D19-vs-D16)",
+             ylab="(Cpd1-High-D19)\nLog2FC Cpd1.110mg.D19-vs-Veh1.D19",
+             main="Cpd1High-vs-D19 and D19-vs-D16",
+             na.val=0, na.rm=T,
+             colors=diff.colors, repelcol="black",
+             show_labels=selgenes, labels=rownames(myset),
+             textrepel=F, regress=F, diagline="neg",
+             cor=F, repelsize=4, repeldir="both",
+             repelxlim=c(-6.5,5.5), repelylim=c(-2.5,5.5),
+             maxoverlaps=Inf)
+dev.off()
+
+# High Res Version
+ggsave(
+  paste0(scatter.path, "Veh1D19pre-D16_vs_Cpd1110mgD19pre-Veh1D19pre_tissue1_FC0BHP005_scatter_300res.png"),
+  scatter_plot(xval=myset[,1], yval=myset[,2], colorby = myset[,3],
+             xlim=c(-7,6), ylim=c(-3,6),
+             xlab="Log2FC Veh1.D19-vs-Veh1.D16\n(D19-vs-D16)",
+             ylab="(Cpd1-High-D19)\nLog2FC Cpd1.110mg.D19-vs-Veh1.D19",
+             main="Cpd1High-vs-D19 and D19-vs-D16",
+             na.val=0, na.rm=T,
+             colors=diff.colors, repelcol="black",
+             show_labels=selgenes, labels=rownames(myset),
+             textrepel=T, regress=F, diagline="neg",
+             cor=F, repelsize=4, repeldir="both", repelxlim=c(-6.5,5.5), repelylim=c(-2.5,5.5)),
+  width = 7.5,
+  height = 6.0,
+  dpi = 300
+)
+
+# PDF Version
+pdf(file = paste0(scatter.path, "Veh1D19pre-D16_vs_Cpd1110mgD19pre-Veh1D19pre_tissue1_FC0BHP005_scatter_v3.pdf"), width=7.5, height=6.0)
+scatter_plot(xval=myset[,1], yval=myset[,2], colorby = myset[,3],
+            xlim=c(-7,6), ylim=c(-3,6),
+            xlab="Log2FC Veh1.D19-vs-Veh1.D16\n(D19-vs-D16)",
+            ylab="(Cpd1-High-D19)\nLog2FC Cpd1.110mg.D19-vs-Veh1.D19",
+            main="Cpd1High-vs-D19 and D19-vs-D16",
+            na.val=0, na.rm=T,
+            colors=diff.colors, repelcol="black",
+            show_labels=selgenes, labels=rownames(myset),
+            textrepel=F, regress=F, diagline="neg",
+            cor=F)
+dev.off()
+
+# RefCpdHigh-Day19, Day19-Day16
+myset <- Project1FC0BHP005.tissue1Vehicle2D19pre.tissue1SHAM2D16.vs.tissue1RefCpd50mgD19pre.tissue1Vehicle2D19pre.scatterset
+# Default Colors
+diff.colors <- c("orange","black","red","#62a8df")
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, marks[grepl("X,Y Both", marks)])
+legend <- c(legend, marks[grepl("X,Y Reverse", marks)])
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+# Selecting Gene Labels
+bothlist <- rownames(myset)[myset[,3]==legend[2]]
+revlist <- rownames(myset)[myset[,3]==legend[3]]
+selgenes <- c(bothlist, revlist)
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path,"Veh2D19pre-D16_vs_RefCpd5.0mgD19pre-Veh2D19pre_tissue1_FC0BHP005_scatter.png"),width = 560, height = 480)
+scatter_plot(xval=myset[,1], yval=myset[,2], colorby = myset[,3],
+             xlim=c(-10,10), ylim=c(-4,5),
+             xlab="Log2FC Veh2.D19-vs-Veh2.D16\n(D19-vs-D16)",
+             ylab="(RefCpd-High-D19)\nLog2FC RefCpd.5.0mg.D19-vs-Veh1.D19",
+             main="RefCpdHigh-vs-D19 and D19-vs-D16",
+             na.val=0, na.rm=T,
+             colors=diff.colors, repelcol="black",
+             show_labels=selgenes, labels=rownames(myset),textrepel=T, toplabel=30)
+dev.off()
+
+# Cpd1High-Day18, Day18-Day16
+myset <- Project1FC0BHP005.tissue1Vehicle1D18.tissue1SHAM1D16.vs.tissue1Cpd1110mgD18.tissue1Vehicle1D18.scatterset
+# Default Colors
+diff.colors <- c("orange","black","red","#62a8df")
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, "X,Y Both (0)")
+legend <- c(legend, marks[grepl("X,Y Reverse", marks)])
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path,"Veh1D18-D16_vs_Cpd1110mgD18-Veh1D18_tissue1_FC0BHP005_scatter.png"),width = 560, height = 480)
+scatter_plot(xval=myset[,1], yval=myset[,2], colorby = myset[,3],
+             xlim=c(-11,10), ylim=c(-5,8),
+             xlab="Log2FC Veh1.D18-vs-Veh1.D16\n(D18-vs-D16)",
+             ylab="(Cpd1-High-D18)\nLog2FC Cpd1.110mg.D18-vs-Veh1.D18",
+             main="Cpd1High-vs-D18 and D18-vs-D16",
+             na.val=0, na.rm=T,
+             colors=diff.colors, repelcol="black",
+             show_labels=T, labels=rownames(myset),textrepel=T, toplabel=20)
+dev.off()
+
+# RefCpdHigh-Day18, Day18-Day16
+myset <- Project1FC0BHP005.tissue1Vehicle2D18.tissue1SHAM2D16.vs.tissue1RefCpd50mgD18.tissue1Vehicle2D18.scatterset
+# Default Colors
+diff.colors <- c("orange","black","red","#62a8df")
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, "X,Y Both (0)")
+legend <- c(legend, marks[grepl("X,Y Reverse", marks)])
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path,"Veh2D18-D16_vs_RefCpd110mgD18-Veh2D18_tissue1_FC0BHP005_scatter.png"),width = 560, height = 480)
+scatter_plot(xval=myset[,1], yval=myset[,2], colorby = myset[,3],
+             xlim=c(-7,12), ylim=c(-4,4),
+             xlab="Log2FC Veh2.D18-vs-Veh2.D16\n(D18-vs-D16)",
+             ylab="(RefCpd-High-D18)\nLog2FC RefCpd.5.0mg.D18-vs-Veh2.D18",
+             main="RefCpdHigh-vs-D18 and D18-vs-D16",
+             na.val=0, na.rm=T,
+             colors=diff.colors, repelcol="black",
+             show_labels=T, labels=rownames(myset),textrepel=T, toplabel=20)
+dev.off()
+```
+
+### Venn FC0BHP005: Cpd1-RefCpd and Drug-Veh
+```{r}
+# ---------
+# Inputs
+# ---------
+# Trt-Veh Comparisons
+Project1FC0BHP005.sigs.trth.d19 <- Project1FC0BHP005.sigs[,c(1, 17, 27, 3, 9)]
+# Trt-Veh Comparisons and Trt-Trt Comparisons
+Project1FC0BHP005.sigs.Cpd1vRefCpd.TrtvVeh.d19 <- merge(Project1FC0BHP005.sigs.trth.d19, TrtFC0BHP005.sigs, by = "Gene")
+
+# ---------------
+# Venn Diagrams
+# ---------------
+library(limma)
+venn.path <- "/data/cbadger/CABA-RNAseq-N247/Venn/FC0BHP005/Direct_Trt_Comp/"
+
+# tissue1-Cpd1High-Day19 and tissue1-Cpd1-vs-RefCpd
+png(filename=paste0(venn.path, "tissue1D19_Cpd1H-vs-Veh_vs_Cpd1-vs-RefCpd_venn.png"), width = 560, height = 480)
+vennDiagram(object=Project1FC0BHP005.sigs.Cpd1vRefCpd.TrtvVeh.d19[,c(2,8)],
+            include=c("up","down"),counts.col = c("red","blue"),
+            names=c("Cpd1H-vs-Veh","Cpd1-vs-RefCpd"))
+dev.off()
+# tissue1-RefCpdHigh-Day19 and tissue1-RefCpd-vs-Cpd1
+png(filename=paste0(venn.path, "tissue1D19_RefCpdH-vs-Veh_vs_RefCpd-vs-Cpd1_venn.png"), width = 560, height = 480)
+vennDiagram(object=Project1FC0BHP005.sigs.Cpd1vRefCpd.TrtvVeh.d19[,c(3,9)],
+            include=c("up","down"),counts.col = c("red","blue"),
+            names=c("RefCpdH-vs-Veh","RefCpd-vs-Cpd1"))
+dev.off()
+# tissue2-Cpd1High-Day19 and tissue2-Cpd1-vs-RefCpd
+png(filename=paste0(venn.path, "tissue2D19_Cpd1H-vs-Veh_vs_Cpd1-vs-RefCpd_venn.png"), width = 560, height = 480)
+vennDiagram(object=Project1FC0BHP005.sigs.Cpd1vRefCpd.TrtvVeh.d19[,c(4,6)],
+            include=c("up","down"),counts.col = c("red","blue"),
+            names=c("Cpd1H-vs-Veh","Cpd1-vs-RefCpd"))
+dev.off()
+# tissue2-RefCpdHigh-Day19 and tissue2-RefCpd-vs-Cpd1
+png(filename=paste0(venn.path, "tissue2D19_RefCpdH-vs-Veh_vs_RefCpd-vs-Cpd1_venn.png"), width = 560, height = 480)
+vennDiagram(object=Project1FC0BHP005.sigs.Cpd1vRefCpd.TrtvVeh.d19[,c(5,7)],
+            include=c("up","down"),counts.col = c("red","blue"),
+            names=c("RefCpdH-vs-Veh","RefCpd-vs-Cpd1"))
+dev.off()
+
+# ---------------
+# Venn Diagrams
+# V2 Labels
+# ---------------
+library(limma)
+venn.path <- "/data/cbadger/CABA-RNAseq-N247/Venn/FC0BHP005/Direct_Trt_Comp/"
+
+# tissue1-Cpd1High-Day19 and tissue1-Cpd1-vs-RefCpd v2
+png(filename=paste0(venn.path, "tissue1D19_Cpd1H-vs-Veh_vs_Cpd1-vs-RefCpd_venn_v2.png"), width = 560, height = 480)
+vennDiagram(object=Project1FC0BHP005.sigs.Cpd1vRefCpd.TrtvVeh.d19[,c(2,8)],
+            include=c("up","down"),counts.col = c("red","blue"),
+            names=c("Cpd1H-vs-Veh\n(tissue1,D19)\n","Cpd1-vs-RefCpd\n(tissue1,D19)\n"))
+dev.off()
+# tissue1-RefCpdHigh-Day19 and tissue1-RefCpd-vs-Cpd1 v2
+png(filename=paste0(venn.path, "tissue1D19_RefCpdH-vs-Veh_vs_RefCpd-vs-Cpd1_venn_v2.png"), width = 560, height = 480)
+vennDiagram(object=Project1FC0BHP005.sigs.Cpd1vRefCpd.TrtvVeh.d19[,c(3,9)],
+            include=c("up","down"),counts.col = c("red","blue"),
+            names=c("RefCpdH-vs-Veh\n(tissue1,D19)\n","RefCpd-vs-Cpd1\n(tissue1,D19)\n"))
+dev.off()
+# tissue2-Cpd1High-Day19 and tissue2-Cpd1-vs-RefCpd v2
+png(filename=paste0(venn.path, "tissue2D19_Cpd1H-vs-Veh_vs_Cpd1-vs-RefCpd_venn_v2.png"), width = 560, height = 480)
+vennDiagram(object=Project1FC0BHP005.sigs.Cpd1vRefCpd.TrtvVeh.d19[,c(4,6)],
+            include=c("up","down"),counts.col = c("red","blue"),
+            names=c("Cpd1H-vs-Veh\n(tissue2,D19)\n","Cpd1-vs-RefCpd\n(tissue2,D19)\n"))
+dev.off()
+# tissue2-RefCpdHigh-Day19 and tissue2-RefCpd-vs-Cpd1 v2
+png(filename=paste0(venn.path, "tissue2D19_RefCpdH-vs-Veh_vs_RefCpd-vs-Cpd1_venn_v2.png"), width = 560, height = 480)
+vennDiagram(object=Project1FC0BHP005.sigs.Cpd1vRefCpd.TrtvVeh.d19[,c(5,7)],
+            include=c("up","down"),counts.col = c("red","blue"),
+            names=c("RefCpdH-vs-Veh\n(tissue2,D19)\n","RefCpd-vs-Cpd1\n(tissue2,D19)\n"))
+dev.off()
+```
+
+### Venn: Project2, TL-TNL Comparisons
+```{r}
+# TL-TNL Formatting
+TL.TNL.merged$Significance..Abs.Log2FC...1.BHP.0.05 <- replace_na(TL.TNL.merged$Significance..Abs.Log2FC...1.BHP.0.05)
+
+# -------------------
+# Ensembl Conversion
+# -------------------
+# Human Project2
+HumanProject2.mouselab <- merge(HumanProject2FC0BHP005.sigs, humanmouse, by.x = "Gene", by.y = 0)
+rownames(HumanProject2.mouselab) <- HumanProject2.mouselab$Mouse_gene_stable_id
+HumanProject2.mouselab$Gene <- NULL
+HumanProject2.mouselab$Mouse_gene_stable_id <- NULL
+
+# Human At Term Labor-vs-NoLabor
+TL.TNL.merged.mouselab <- merge(TL.TNL.merged, humanmouse, by = 0)
+rownames(TL.TNL.merged.mouselab) <- TL.TNL.merged.mouselab$Mouse_gene_stable_id
+TL.TNL.merged.mouselab$Row.names <- NULL
+TL.TNL.merged.mouselab$Mouse_gene_stable_id <- NULL
+
+# ----------
+# Sig Sets
+# ----------
+# Project2
+Project2.Cpd1H.rows <- HumanProject2.mouselab[HumanProject2.mouselab[,"XCpd1_High_vs_DMSO"]!=0,]
+Project2.Cpd1H.set <- paste(rownames(Project2.Cpd1H.rows), sep="")
+Project2.RefCpdH.rows <- HumanProject2.mouselab[HumanProject2.mouselab[,"RefCpd_High_vs_DMSO"]!=0,]
+Project2.RefCpdH.set <- paste(rownames(Project2.RefCpdH.rows), sep="")
+
+# At-Term Labor-vs-NoLabor
+TL.TNL.rows <- TL.TNL.merged.mouselab[TL.TNL.merged.mouselab[,"Significance..Abs.Log2FC...1.BHP.0.05"]!=0,]
+TL.TNL.set <- paste(rownames(TL.TNL.rows), sep="")
+
+# Project1 Project
+Project1Cpd1H.tissue1.rows <- Project1FC0BHP005.sigs[Project1FC0BHP005.sigs[,"tissue1_Cpd1.110mg_D19pre_vs_tissue1_Vehicle1_D19pre"]!=0,]
+Project1Cpd1H.tissue1.set <- paste(Project1Cpd1H.tissue1.rows$Gene, sep="")
+Project1RefCpdH.tissue1.rows <- Project1FC0BHP005.sigs[Project1FC0BHP005.sigs[,"tissue1_RefCpd.5.0mg_D19pre_vs_tissue1_Vehicle2_D19pre"]!=0,]
+Project1RefCpdH.tissue1.set <- paste(Project1RefCpdH.tissue1.rows$Gene, sep="")
+
+# ------------
+# Venn Draw
+# ------------
+# Project1 vs Project2
+# Cpd1
+venn.draw(set1=Project1Cpd1H.tissue1.set,
+          set2=Project2.Cpd1H.set,
+          name1="Cpd1 110mg Effect\n(tissue1,D19pr,FC0BHP005)",
+          name2="Cpd1 High Effect\n(Project2,FC0BHP005)",
+          col1="#c9578c", col2="#8675ca")
+# RefCpd
+venn.draw(set1=Project1RefCpdH.tissue1.set,
+          set2=Project2.RefCpdH.set,
+          name1="RefCpd 5.0mg Effect\n(tissue1,D19pr,FC0BHP005)",
+          name2="RefCpd High Effect\n(Project2,FC0BHP005)",
+          col1="#c9578c", col2="#8675ca")
+
+# Project1 vs TL-TNL
+# Cpd1
+venn.draw(set1=Project1Cpd1H.tissue1.set,
+          set2=TL.TNL.set,
+          name1="Cpd1 110mg Effect\n(tissue1,D19pr,FC0BHP005)",
+          name2="TL-TNL Effect\n(FC2BHP005)",
+          col1="#c9578c", col2="#8675ca")
+# RefCpd
+venn.draw(set1=Project1RefCpdH.tissue1.set,
+          set2=TL.TNL.set,
+          name1="RefCpd 5.0mg Effect\n(tissue1,D19pr,FC0BHP005)",
+          name2="TL-TNL Effect\n(FC2BHP005)",
+          col1="#c9578c", col2="#8675ca")
+
+#Project2 vs TL-TNL
+# Cpd1
+venn.draw(set1=Project2.Cpd1H.set,
+          set2=TL.TNL.set,
+          name1="Cpd1 High Effect\n(Project2,FC0BHP005)",
+          name2="TL-TNL Effect\n(FC2BHP005)",
+          col1="#c9578c", col2="#8675ca")
+# RefCpd
+venn.draw(set1=Project2.RefCpdH.set,
+          set2=TL.TNL.set,
+          name1="RefCpd High Effect\n(Project2,FC0BHP005)",
+          name2="TL-TNL Effect\n(FC2BHP005)",
+          col1="#c9578c", col2="#8675ca")
+
+# ------------
+# Venn Files
+# ------------
+venn.path <- "/data/cbadger/CABA-RNAseq-N247/Venn/FC0BHP005/"
+
+# Project1 vs Project2
+# Cpd1
+file.path <- paste0(venn.path,"Project1Cpd1.110mg.tissue1D19pre-vs-Project2.Cpd1H_FC0BHP005_Venn.png")
+venn.file(set1=Project1Cpd1H.tissue1.set,
+          set2=Project2.Cpd1H.set,
+          name1="Cpd1 110mg Effect\n(tissue1,D19pr,FC0BHP005)",
+          name2="Cpd1 High Effect\n(Project2,FC0BHP005)",
+          col1="#c9578c", col2="#8675ca",
+          filepath=file.path)
+# RefCpd
+file.path <- paste0(venn.path,"Project1RefCpd.5.0mg.tissue1D19pre-vs-Project2.RefCpdH_FC0BHP005_Venn.png")
+venn.file(set1=Project1RefCpdH.tissue1.set,
+          set2=Project2.RefCpdH.set,
+          name1="RefCpd 5.0mg Effect\n(tissue1,D19pr,FC0BHP005)",
+          name2="RefCpd High Effect\n(Project2,FC0BHP005)",
+          col1="#c9578c", col2="#8675ca",
+          filepath=file.path)
+
+# Project1 vs TL-TNL
+# Cpd1
+file.path <- paste0(venn.path,"Project1Cpd1.110mg.tissue1D19pre-vs-TL.TNL_Venn.png")
+venn.file(set1=Project1Cpd1H.tissue1.set,
+          set2=TL.TNL.set,
+          name1="Cpd1 110mg Effect\n(tissue1,D19pr,FC0BHP005)",
+          name2="TL-TNL Effect\n(FC2BHP005)",
+          col1="#c9578c", col2="#8675ca",
+          filepath=file.path)
+# RefCpd
+file.path <- paste0(venn.path,"Project1RefCpd.5.0mg.tissue1D19pre-vs-TL.TNL_Venn.png")
+venn.file(set1=Project1RefCpdH.tissue1.set,
+          set2=TL.TNL.set,
+          name1="RefCpd 5.0mg Effect\n(tissue1,D19pr,FC0BHP005)",
+          name2="TL-TNL Effect\n(FC2BHP005)",
+          col1="#c9578c", col2="#8675ca",
+          filepath=file.path)
+
+#Project2 vs TL-TNL
+# Cpd1
+file.path <- paste0(venn.path,"Project2.Cpd1H-vs-TL.TNL_Venn.png")
+venn.file(set1=Project2.Cpd1H.set,
+          set2=TL.TNL.set,
+          name1="Cpd1 High Effect\n(Project2,FC0BHP005)",
+          name2="TL-TNL Effect\n(FC2BHP005)",
+          col1="#c9578c", col2="#8675ca",
+          filepath=file.path)
+# RefCpd
+file.path <- paste0(venn.path,"Project2.RefCpdH-vs-TL.TNL_Venn.png")
+venn.file(set1=Project2.RefCpdH.set,
+          set2=TL.TNL.set,
+          name1="RefCpd High Effect\n(Project2,FC0BHP005)",
+          name2="TL-TNL Effect\n(FC2BHP005)",
+          col1="#c9578c", col2="#8675ca",
+          filepath=file.path)
+```
+
+### Scatterplot: Project1 vs TL-TNL
+```{r}
+# --------
+# Input
+# --------
+# Merged Anno
+Project1Cpd1.RefCpd.High.tissue1.D19pre_TL.TNL.merged <- merge(Project1FC0BHP005.merged.anno.tissue1.trt.d19.high, TL.TNL.merged.mouselab, by = 0)
+#tissue2: Project1FC0BHP005.merged.anno.tissue2.trt.d19.high
+
+# ---------------
+# Scatter Input
+# ---------------
+make.scatter.input(data=Project1Cpd1.RefCpd.High.tissue1.D19pre_TL.TNL.merged, project="TLTNL", dir="", files=F)
+
+# Default Inputs
+diff.colors <- c("orange","black","red","#62a8df")
+names(diff.colors) <- c("X Only","X,Y Both","X,Y Reverse","Y Only")
+
+# ---------------------------
+# Scatterplots (FC0 BHP005)
+# ---------------------------
+scatter.path <- "/data/cbadger/CABA-RNAseq-N247/Scatter/FC0BHP005/"
+
+# tissue1Cpd1110mgD19pre-vs-tissue1Vehicle1D19pre and TL-vs-TNL
+myset <- TLTNL.tissue1Cpd1110mgD19pre.tissue1Vehicle1D19pre.vs.TL.TNL.scatterset
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, marks[grepl("X,Y Both", marks)])
+legend <- c(legend, marks[grepl("X,Y Reverse", marks)])
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+# Selecting Gene Labels
+bothlist <- rownames(myset)[myset[,3]==legend[2]]
+revlist <- rownames(myset)[myset[,3]==legend[3]]
+selgenes <- c(bothlist, revlist)
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path, "Project1Cpd1.110mg-TL.TNL_scatter.png"), width = 560, height = 480)
+scatter_plot(xval=myset[,1],yval=myset[,2],colorby = myset[,3],xlim=c(-9,9),ylim=c(-9,9),xlab="Log2FC Cpd1110mg-vs-Vehicle1\n(Cpd1 High)",ylab="(TL-TNL)\nLog2FC TL-vs-TNL",na.val=0,na.rm=T,main="Cpd1-High vs TL-TNL",colors=diff.colors,show_labels=selgenes,labels=rownames(myset),textrepel=T,repelcol="black")
+dev.off()
+
+
+# tissue1RefCpd50mgD19pre-vs-tissue1Vehicle2D19pre and TL-vs-TNL
+myset <- TLTNL.tissue1RefCpd50mgD19pre.tissue1Vehicle2D19pre.vs.TL.TNL.scatterset
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, marks[grepl("X,Y Both", marks)])
+legend <- c(legend, marks[grepl("X,Y Reverse", marks)])
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+# Selecting Gene Labels
+bothlist <- rownames(myset)[myset[,3]==legend[2]]
+revlist <- rownames(myset)[myset[,3]==legend[3]]
+selgenes <- c(bothlist, revlist)
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path, "Project1RefCpd.5.0mg-TL.TNL_scatter.png"), width = 560, height = 480)
+scatter_plot(xval=myset[,1],yval=myset[,2],colorby = myset[,3],xlim=c(-9,9),ylim=c(-9,9),xlab="Log2FC RefCpd5.0mg-vs-Vehicle2\n(RefCpd High)",ylab="(TL-TNL)\nLog2FC TL-vs-TNL",na.val=0,na.rm=T,main="RefCpd-High vs TL-TNL",colors=diff.colors,show_labels=selgenes,labels=rownames(myset),textrepel=T,toplabel=40,repelcol="black")
+dev.off()
+```
+
+### Scatterplot: Project1 Late Gestation vs Project3 Gestation
+```{r}
+# ------------
+# Inputs
+# ------------
+# Project1 Cpd1 Project
+# Day19-Day16
+Project1FC2BHP005.merged.anno.tissue1.veh1.d19.d16 <- Project1FC2BHP005.merged.anno[,c(151:155, 191)]
+# Day19-Day16
+Project1FC2BHP005.merged.anno.tissue1.veh2.d19.d16 <- Project1FC2BHP005.merged.anno[,c(181:185, 191)]
+# Day18-Day16
+Project1FC2BHP005.merged.anno.tissue1.veh1.d18.d16 <- Project1FC2BHP005.merged.anno[,c(131:135, 191)]
+# Day18-Day16
+Project1FC2BHP005.merged.anno.tissue1.veh2.d18.d16 <- Project1FC2BHP005.merged.anno[,c(161:165, 191)]
+
+# Project3 Cpd4 Project
+# Day19-Day16
+Project3FC2BHP005.merged.anno.ctrl.d19.d16 <- Project3FC2BHP005.merged.anno[,c(16:20)]
+# Day18-Day16
+Project3FC2BHP005.merged.anno.ctrl.d18.d16 <- Project3FC2BHP005.merged.anno[,c(6:10)]
+
+
+# ---------------------
+# Combined Merged Anno
+# ---------------------
+# Day19-Day16 Veh1
+Project1veh1_Project3Cpd4.d19.d16.merged.anno <- merge(Project1FC2BHP005.merged.anno.tissue1.veh1.d19.d16,
+                                       Project3FC2BHP005.merged.anno.ctrl.d19.d16,
+                                       by = 0)
+rownames(Project1veh1_Project3Cpd4.d19.d16.merged.anno) <- Project1veh1_Project3Cpd4.d19.d16.merged.anno$Row.names
+Project1veh1_Project3Cpd4.d19.d16.merged.anno$Row.names <- NULL
+
+# Day19-Day16 Veh2
+Project1veh2_Project3Cpd4.d19.d16.merged.anno <- merge(Project1FC2BHP005.merged.anno.tissue1.veh2.d19.d16,
+                                       Project3FC2BHP005.merged.anno.ctrl.d19.d16,
+                                       by = 0)
+rownames(Project1veh2_Project3Cpd4.d19.d16.merged.anno) <- Project1veh2_Project3Cpd4.d19.d16.merged.anno$Row.names
+Project1veh2_Project3Cpd4.d19.d16.merged.anno$Row.names <- NULL
+
+# Day18-Day16 Veh1
+Project1veh1_Project3Cpd4.d18.d16.merged.anno <- merge(Project1FC2BHP005.merged.anno.tissue1.veh1.d18.d16,
+                                       Project3FC2BHP005.merged.anno.ctrl.d18.d16,
+                                       by = 0)
+rownames(Project1veh1_Project3Cpd4.d18.d16.merged.anno) <- Project1veh1_Project3Cpd4.d18.d16.merged.anno$Row.names
+Project1veh1_Project3Cpd4.d18.d16.merged.anno$Row.names <- NULL
+
+# Day18-Day16 Veh2
+Project1veh2_Project3Cpd4.d18.d16.merged.anno <- merge(Project1FC2BHP005.merged.anno.tissue1.veh2.d18.d16,
+                                       Project3FC2BHP005.merged.anno.ctrl.d18.d16,
+                                       by = 0)
+rownames(Project1veh2_Project3Cpd4.d18.d16.merged.anno) <- Project1veh2_Project3Cpd4.d18.d16.merged.anno$Row.names
+Project1veh2_Project3Cpd4.d18.d16.merged.anno$Row.names <- NULL
+
+
+# ----------------
+# Scatter Inputs
+# ----------------
+# Day19-Day16 Veh1
+make.scatter.input(data=Project1veh1_Project3Cpd4.d19.d16.merged.anno, project="Project1Veh1Project3", dir="", files=F)
+
+# Day19-Day16 Veh2
+make.scatter.input(data=Project1veh2_Project3Cpd4.d19.d16.merged.anno, project="Project1Veh2Project3", dir="", files=F)
+
+# Day18-Day16 Veh1
+make.scatter.input(data=Project1veh1_Project3Cpd4.d18.d16.merged.anno, project="Project1Veh1Project3", dir="", files=F)
+
+# Day18-Day16 Veh2
+make.scatter.input(data=Project1veh2_Project3Cpd4.d18.d16.merged.anno, project="Project1Veh2Project3", dir="", files=F)
+
+# Default Inputs
+diff.colors <- c("orange","black","red","#62a8df")
+names(diff.colors) <- c("X Only","X,Y Both","X,Y Reverse","Y Only")
+
+# ---------------
+# Scatterplots
+# ---------------
+scatter.path <- "/data/cbadger/CABA-RNAseq-N247/Scatter/Project3/"
+
+# Day19-Day16 Veh1 vs Project3 Day19-Day16
+myset <- Project1Veh1Project3tissue1Vehicle1D19pre.tissue1SHAM1D16.vs.CtrlDay19.CtrlDay16.scatterset
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, marks[grepl("X,Y Both", marks)])
+legend <- c(legend, marks[grepl("X,Y Reverse", marks)])
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+# Selecting Gene Labels
+bothlist <- rownames(myset)[myset[,3]==legend[2]]
+revlist <- rownames(myset)[myset[,3]==legend[3]]
+selgenes <- c(bothlist, revlist)
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path, "Project1Veh1D19-D16_vs_Project3D19-D16_scatter.png"), width = 560, height = 480)
+scatter_plot(xval=myset[,1],yval=myset[,2],colorby = myset[,3],
+             xlim=c(-11,11),ylim=c(-11,11),
+             xlab="Log2FC Veh1.D19-vs-Veh1.D16\n(D19 Veh1)",
+             ylab="(D19 Ctrl)\nLog2FC Ctrl.D19-vs-D16",
+             main="Project1 Veh1 D19-D16 and Project3 Ctrl D19-D16",
+             na.val=0,na.rm=T,colors=diff.colors,
+             show_labels=selgenes,labels=rownames(myset),textrepel=T,repelcol="black", toplabel = 30)
+dev.off()
+
+# Day19-Day16 Veh2 vs Project3 Day19-Day16
+myset <- Project1Veh2Project3tissue1Vehicle2D19pre.tissue1SHAM2D16.vs.CtrlDay19.CtrlDay16.scatterset
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, marks[grepl("X,Y Both", marks)])
+legend <- c(legend, marks[grepl("X,Y Reverse", marks)])
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+# Selecting Gene Labels
+bothlist <- rownames(myset)[myset[,3]==legend[2]]
+revlist <- rownames(myset)[myset[,3]==legend[3]]
+selgenes <- c(bothlist, revlist)
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path, "Project1Veh2D19-D16_vs_Project3D19-D16_scatter.png"), width = 560, height = 480)
+scatter_plot(xval=myset[,1],yval=myset[,2],colorby = myset[,3],
+             xlim=c(-11,11),ylim=c(-11,11),
+             xlab="Log2FC Veh2.D19-vs-Veh2.D16\n(D19 Veh2)",
+             ylab="(D19 Ctrl)\nLog2FC Ctrl.D19-vs-D16",
+             main="Project1 Veh2 D19-D16 and Project3 Ctrl D19-D16",
+             na.val=0,na.rm=T,colors=diff.colors,
+             show_labels=selgenes,labels=rownames(myset),textrepel=T,repelcol="black", toplabel = 30)
+dev.off()
+
+# Day18-Day16 Veh1 vs Project3 Day18-Day16
+myset <- Project1Veh1Project3tissue1Vehicle1D18.tissue1SHAM1D16.vs.CtrlDay18.CtrlDay16.scatterset
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, marks[grepl("X,Y Both", marks)])
+legend <- c(legend, marks[grepl("X,Y Reverse", marks)])
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+# Selecting Gene Labels
+bothlist <- rownames(myset)[myset[,3]==legend[2]]
+revlist <- rownames(myset)[myset[,3]==legend[3]]
+selgenes <- c(bothlist, revlist)
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path, "Project1Veh1D18-D16_vs_Project3D18-D16_scatter.png"), width = 560, height = 480)
+scatter_plot(xval=myset[,1],yval=myset[,2],colorby = myset[,3],
+             xlim=c(-8,12),ylim=c(-8,12),
+             xlab="Log2FC Veh1.D18-vs-Veh1.D16\n(D18 Veh1)",
+             ylab="(D18 Ctrl)\nLog2FC Ctrl.D18-vs-D16",
+             main="Project1 Veh1 D18-D16 and Project3 Ctrl D18-D16",
+             na.val=0,na.rm=T,colors=diff.colors,
+             show_labels=selgenes,labels=rownames(myset),textrepel=T,repelcol="black", toplabel = 30)
+dev.off()
+
+# Day18-Day16 Veh2 vs Project3 Day18-Day16
+myset <- Project1Veh2Project3tissue1Vehicle2D18.tissue1SHAM2D16.vs.CtrlDay18.CtrlDay16.scatterset
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, marks[grepl("X,Y Both", marks)])
+legend <- c(legend, "X,Y Reverse (0)")
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+# Selecting Gene Labels
+bothlist <- rownames(myset)[myset[,3]==legend[2]]
+revlist <- rownames(myset)[myset[,3]==legend[3]]
+selgenes <- c(bothlist, revlist)
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path, "Project1Veh2D18-D16_vs_Project3D18-D16_scatter.png"), width = 560, height = 480)
+scatter_plot(xval=myset[,1],yval=myset[,2],colorby = myset[,3],
+             xlim=c(-8,12),ylim=c(-8,12),
+             xlab="Log2FC Veh2.D18-vs-Veh2.D16\n(D18 Veh2)",
+             ylab="(D18 Ctrl)\nLog2FC Ctrl.D18-vs-D16",
+             main="Project1 Veh2 D18-D16 and Project3 Ctrl D18-D16",
+             na.val=0,na.rm=T,colors=diff.colors,
+             show_labels=selgenes,labels=rownames(myset),textrepel=T,repelcol="black", toplabel = 30)
+dev.off()
+
+```
+
+### Venn: Project1 (Cpd1,RefCpd) vs Project3 (Cpd4)
+```{r}
+# -----------------
+# Project1 Cpd1 RefCpd Sigs
+# -----------------
+# Inputs: Cpd1High-Day19, RefCpdHigh-Day19, Cpd1High-Day18, RefCpdHigh-Day18
+Project1FC0BHP005.sigs.tissue1.trth.d19.d18 <- Project1FC0BHP005.sigs[,c(1, 17, 27, 16, 26)]
+# Venn Sets
+make.venn.sets(sigs=Project1FC0BHP005.sigs.tissue1.trth.d19.d18, allsets=T, upsets=F, downsets=F, files=F)
+
+# -----------------
+# Project3 Cpd4 Sigs
+# -----------------
+# Inputs: Cpd4-Day19, Cpd4-Day18
+Project3FC2BHP005.sigs.Cpd4.d19.d18 <- Project3FC2BHP005.sigs[,c(1,8,6)]
+# Venn Sets
+make.venn.sets(sigs=Project3FC2BHP005.sigs.Cpd4.d19.d18, allsets=T, upsets=F, downsets=F, files=F)
+
+# ------------
+# Venn Draw
+# ------------
+# Cpd1High-Day19, Cpd4-Day19
+venn.draw(set1=Project1FC0BHP005.tissue1Cpd1110mgD19pre.tissue1Vehicle1D19pre.set,
+          set2=Project3FC2BHP005.Cpd4Day19.CtrlDay19.set,
+          name1="Cpd1-High-D19\n(tissue1,FC0BHP005)",
+          name2="Cpd4-D19\n(tissue1,FC2BHP005)",
+          col1="#c9578c", col2="#8675ca")
+# RefCpdHigh-Day19, Cpd4-Day19
+venn.draw(set1=Project1FC0BHP005.tissue1RefCpd50mgD19pre.tissue1Vehicle2D19pre.set,
+          set2=Project3FC2BHP005.Cpd4Day19.CtrlDay19.set,
+          name1="RefCpd-High-D19\n(tissue1,FC0BHP005)",
+          name2="Cpd4-D19\n(tissue1,FC2BHP005)",
+          col1="#c9578c", col2="#8675ca")
+# Cpd1High-Day18, Cpd4-Day18
+venn.draw(set1=Project1FC0BHP005.tissue1Cpd1110mgD18.tissue1Vehicle1D18.set,
+          set2=Project3FC2BHP005.Cpd4Day18.CtrlDay18.set,
+          name1="Cpd1-High-D18\n(tissue1,FC0BHP005)",
+          name2="Cpd4-D18\n(tissue1,FC2BHP005)",
+          col1="#c9578c", col2="#8675ca")
+# RefCpdHigh-Day18, Cpd4-Day18
+venn.draw(set1=Project1FC0BHP005.tissue1RefCpd50mgD18.tissue1Vehicle2D18.set,
+          set2=Project3FC2BHP005.Cpd4Day18.CtrlDay18.set,
+          name1="RefCpd-High-D18\n(tissue1,FC0BHP005)",
+          name2="Cpd4-D18\n(tissue1,FC2BHP005)",
+          col1="#c9578c", col2="#8675ca")
+
+# ------------
+# Venn Files
+# ------------
+venn.path <- "/data/cbadger/CABA-RNAseq-N247/Venn/Project3/"
+
+# Cpd1High-Day19, Cpd4-Day19
+file.path <- paste0(venn.path,"Cpd1H.D19pre-Veh1D19-FC0BHP005_vs_Cpd4.D19-VehD19-FC2BHP005_tissue1_Venn.png")
+venn.file(set1=Project1FC0BHP005.tissue1Cpd1110mgD19pre.tissue1Vehicle1D19pre.set,
+          set2=Project3FC2BHP005.Cpd4Day19.CtrlDay19.set,
+          name1="Cpd1-High-D19\n(tissue1,FC0BHP005)",
+          name2="Cpd4-D19\n(tissue1,FC2BHP005)",
+          col1="#c9578c", col2="#8675ca",
+          filepath=file.path)
+# RefCpdHigh-Day19, Cpd4-Day19
+file.path <- paste0(venn.path,"RefCpdH.D19pre-Veh2D19-FC0BHP005_vs_Cpd4.D19-VehD19-FC2BHP005_tissue1_Venn.png")
+venn.file(set1=Project1FC0BHP005.tissue1RefCpd50mgD19pre.tissue1Vehicle2D19pre.set,
+          set2=Project3FC2BHP005.Cpd4Day19.CtrlDay19.set,
+          name1="RefCpd-High-D19\n(tissue1,FC0BHP005)",
+          name2="Cpd4-D19\n(tissue1,FC2BHP005)",
+          col1="#c9578c", col2="#8675ca",
+          filepath=file.path)
+# Cpd1High-Day18, Cpd4-Day18
+file.path <- paste0(venn.path,"Cpd1H.D18pre-Veh1D18-FC0BHP005_vs_Cpd4.D18-VehD18-FC2BHP005_tissue1_Venn.png")
+venn.file(set1=Project1FC0BHP005.tissue1Cpd1110mgD18.tissue1Vehicle1D18.set,
+          set2=Project3FC2BHP005.Cpd4Day18.CtrlDay18.set,
+          name1="Cpd1-High-D18\n(tissue1,FC0BHP005)",
+          name2="Cpd4-D18\n(tissue1,FC2BHP005)",
+          col1="#c9578c", col2="#8675ca",
+          filepath=file.path)
+# RefCpdHigh-Day18, Cpd4-Day18
+file.path <- paste0(venn.path,"RefCpdH.D18pre-Veh2D18-FC0BHP005_vs_Cpd4.D18-VehD18-FC2BHP005_tissue1_Venn.png")
+venn.file(set1=Project1FC0BHP005.tissue1RefCpd50mgD18.tissue1Vehicle2D18.set,
+          set2=Project3FC2BHP005.Cpd4Day18.CtrlDay18.set,
+          name1="RefCpd-High-D18\n(tissue1,FC0BHP005)",
+          name2="Cpd4-D18\n(tissue1,FC2BHP005)",
+          col1="#c9578c", col2="#8675ca",
+          filepath=file.path)
+```
+
+### Scatterplots: Project1 (Cpd1,RefCpd) vs Project3 (Cpd4)
+```{r}
+# ----------------------
+# Project1 Project
+# Trts @ D19pre and D18
+# ----------------------
+# Cpd1High-Day19, Day19-Day16
+Project1FC0BHP005.merged.anno.tissue1.Cpd1h.d19 <- Project1FC0BHP005.merged.anno[,c(76:80, 191)]
+# RefCpdHigh-Day19, Day19-Day16
+Project1FC0BHP005.merged.anno.tissue1.RefCpdh.d19 <- Project1FC0BHP005.merged.anno[,c(126:130, 191)]
+# Cpd1High-Day18, Day18-Day16
+Project1FC0BHP005.merged.anno.tissue1.Cpd1h.d18 <- Project1FC0BHP005.merged.anno[,c(71:75, 191)]
+# RefCpdHigh-Day18, Day18-Day16
+Project1FC0BHP005.merged.anno.tissue1.RefCpdh.d18 <- Project1FC0BHP005.merged.anno[,c(121:125, 191)]
+
+# ---------------------
+# Project3
+# Cpd4 @ D19 and D18
+# ---------------------
+# Cpd4 Day 19
+Project3FC2BHP005.merged.anno.Cpd4.d19 <- Project3FC2BHP005.merged.anno[,c(31:35)]
+# Cpd4 Day 18
+Project3FC2BHP005.merged.anno.Cpd4.d18 <- Project3FC2BHP005.merged.anno[,c(21:25)]
+
+# ---------------------
+# Combined Merged Anno
+# ---------------------
+# Cpd1High-Day19, Cpd4-Day19
+Project1Cpd1_Project3Cpd4.d19.merged.anno <- merge(Project1FC0BHP005.merged.anno.tissue1.Cpd1h.d19,
+                                       Project3FC2BHP005.merged.anno.Cpd4.d19,
+                                       by = 0)
+rownames(Project1Cpd1_Project3Cpd4.d19.merged.anno) <- Project1Cpd1_Project3Cpd4.d19.merged.anno$Row.names
+Project1Cpd1_Project3Cpd4.d19.merged.anno$Row.names <- NULL
+
+# RefCpdHigh-Day19, Cpd4-Day19
+Project1RefCpd_Project3Cpd4.d19.merged.anno <- merge(Project1FC0BHP005.merged.anno.tissue1.RefCpdh.d19,
+                                        Project3FC2BHP005.merged.anno.Cpd4.d19,
+                                        by = 0)
+rownames(Project1RefCpd_Project3Cpd4.d19.merged.anno) <- Project1RefCpd_Project3Cpd4.d19.merged.anno$Row.names
+Project1RefCpd_Project3Cpd4.d19.merged.anno$Row.names <- NULL
+
+# Cpd1High-Day18, Cpd4-Day18
+Project1Cpd1_Project3Cpd4.d18.merged.anno <- merge(Project1FC0BHP005.merged.anno.tissue1.Cpd1h.d18,
+                                       Project3FC2BHP005.merged.anno.Cpd4.d18,
+                                       by = 0)
+rownames(Project1Cpd1_Project3Cpd4.d18.merged.anno) <- Project1Cpd1_Project3Cpd4.d18.merged.anno$Row.names
+Project1Cpd1_Project3Cpd4.d18.merged.anno$Row.names <- NULL
+
+# RefCpdHigh-Day18, Cpd4-Day18
+Project1RefCpd_Project3Cpd4.d18.merged.anno <- merge(Project1FC0BHP005.merged.anno.tissue1.RefCpdh.d18,
+                                        Project3FC2BHP005.merged.anno.Cpd4.d18,
+                                        by = 0)
+rownames(Project1RefCpd_Project3Cpd4.d18.merged.anno) <- Project1RefCpd_Project3Cpd4.d18.merged.anno$Row.names
+Project1RefCpd_Project3Cpd4.d18.merged.anno$Row.names <- NULL
+
+# ---------------
+# Scatter Input
+# ---------------
+# Cpd1High-Day19, Cpd4-Day19
+make.scatter.input(data=Project1Cpd1_Project3Cpd4.d19.merged.anno, project="Project1Project3", dir="", files=F)
+
+# RefCpdHigh-Day19, Cpd4-Day19
+make.scatter.input(data=Project1RefCpd_Project3Cpd4.d19.merged.anno, project="Project1Project3", dir="", files=F)
+
+# Cpd1High-Day18, Cpd4-Day18
+make.scatter.input(data=Project1Cpd1_Project3Cpd4.d18.merged.anno, project="Project1Project3", dir="", files=F)
+
+# RefCpdHigh-Day18, Cpd4-Day18
+make.scatter.input(data=Project1RefCpd_Project3Cpd4.d18.merged.anno, project="Project1Project3", dir="", files=F)
+
+# Default Inputs
+diff.colors <- c("orange","black","red","#62a8df")
+names(diff.colors) <- c("X Only","X,Y Both","X,Y Reverse","Y Only")
+
+# ---------------
+# Scatterplots
+# ---------------
+scatter.path <- "/data/cbadger/CABA-RNAseq-N247/Scatter/Project3/"
+
+# Cpd1High-Day19, Cpd4-Day19
+myset <- Project1Project3tissue1Cpd1110mgD19pre.tissue1Vehicle1D19pre.vs.Cpd4Day19.CtrlDay19.scatterset
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, marks[grepl("X,Y Both", marks)])
+legend <- c(legend, "X,Y Reverse (0)")
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+# Selecting Gene Labels
+bothlist <- rownames(myset)[myset[,3]==legend[2]]
+revlist <- rownames(myset)[myset[,3]==legend[3]]
+selgenes <- c(bothlist, revlist)
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path, "Cpd1.110mg.D19pre-Veh1D19pre_vs_Cpd4.D19-VehD19_scatter.png"), width = 560, height = 480)
+scatter_plot(xval=myset[,1],yval=myset[,2],colorby = myset[,3],
+             xlim=c(-9,9),ylim=c(-9,9),
+             xlab="Log2FC Cpd1.110mg.D19-vs-Veh1.D19\n(Cpd1 High)",
+             ylab="(Cpd4)\nLog2FC Cpd4.D19-vs-Veh.D19",
+             main="Cpd1-High vs Cpd4 on Day 19",
+             na.val=0,na.rm=T,colors=diff.colors,
+             show_labels=selgenes,labels=rownames(myset),textrepel=T,repelcol="black", toplabel = 40)
+dev.off()
+
+
+# RefCpdHigh-Day19, Cpd4-Day19
+myset <- Project1Project3tissue1RefCpd50mgD19pre.tissue1Vehicle2D19pre.vs.Cpd4Day19.CtrlDay19.scatterset
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, marks[grepl("X,Y Both", marks)])
+legend <- c(legend, marks[grepl("X,Y Reverse", marks)])
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+# Selecting Gene Labels
+bothlist <- rownames(myset)[myset[,3]==legend[2]]
+revlist <- rownames(myset)[myset[,3]==legend[3]]
+selgenes <- c(bothlist, revlist)
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path, "RefCpd.5.0mg.D19pre-Veh2D19pre_vs_Cpd4.D19-VehD19_scatter.png"), width = 560, height = 480)
+scatter_plot(xval=myset[,1],yval=myset[,2],colorby = myset[,3],
+             xlim=c(-7,7),ylim=c(-9,9),
+             xlab="Log2FC RefCpd.5.0mg.D19-vs-Veh2.D19\n(RefCpd High)",
+             ylab="(Cpd4)\nLog2FC Cpd4.D19-vs-Veh.D19",
+             main="RefCpd-High vs Cpd4 on Day 19",
+             na.val=0,na.rm=T,colors=diff.colors,
+             show_labels=selgenes,labels=rownames(myset),textrepel=T,repelcol="black", toplabel = 40)
+dev.off()
+
+# Cpd1High-Day18, Cpd4-Day18
+myset <- Project1Project3tissue1Cpd1110mgD18.tissue1Vehicle1D18.vs.Cpd4Day18.CtrlDay18.scatterset
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, "X,Y Both (0)")
+legend <- c(legend, marks[grepl("X,Y Reverse", marks)])
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+# Selecting Gene Labels
+bothlist <- rownames(myset)[myset[,3]==legend[2]]
+revlist <- rownames(myset)[myset[,3]==legend[3]]
+selgenes <- c(bothlist, revlist)
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path, "Cpd1.110mg.D18-Veh1D18_vs_Cpd4.D18-VehD18_scatter.png"), width = 560, height = 480)
+scatter_plot(xval=myset[,1],yval=myset[,2],colorby = myset[,3],
+             xlim=c(-9,9),ylim=c(-9,9),
+             xlab="Log2FC Cpd1.110mg.D18-vs-Veh1.D18\n(Cpd1 High)",
+             ylab="(Cpd4)\nLog2FC Cpd4.D18-vs-Veh.D18",
+             main="Cpd1-High vs Cpd4 on Day 18",
+             na.val=0,na.rm=T,colors=diff.colors,
+             show_labels=T,labels=rownames(myset),textrepel=T,repelcol="black", toplabel = 15)
+dev.off()
+
+
+# RefCpdHigh-Day18, Cpd4-Day18
+myset <- Project1Project3tissue1RefCpd50mgD18.tissue1Vehicle2D18.vs.Cpd4Day18.CtrlDay18.scatterset
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, "X,Y Both (0)")
+legend <- c(legend, "X,Y Reverse (0)")
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+# Scatterplot (PNG)
+png(filename=paste0(scatter.path, "RefCpd.5.0mg.D18-Veh2D18_vs_Cpd4.D18-VehD18_scatter.png"), width = 560, height = 480)
+scatter_plot(xval=myset[,1],yval=myset[,2],colorby = myset[,3],
+             xlim=c(-6,6),ylim=c(-9,9),
+             xlab="Log2FC RefCpd.5.0mg.D18-vs-Veh2.D18\n(RefCpd High)",
+             ylab="(Cpd4)\nLog2FC Cpd4.D18-vs-Veh.D18",
+             main="RefCpd-High vs Cpd4 on Day 18",
+             na.val=0,na.rm=T,colors=diff.colors,
+             show_labels=T,labels=rownames(myset),textrepel=T,repelcol="black", toplabel = 15)
+dev.off()
+```
+
+### Project3 Cpd4 vs Temporal
+```{r}
+# ---------------------
+# Project3 Cpd4
+# ---------------------
+# Cpd4 Day 19
+Project3FC2BHP005.merged.anno.Cpd4.d19.temporal <- Project3FC2BHP005.merged.anno[,c(16:20, 31:35,36)]
+# Scatterplot Input
+make.scatter.input(data=Project3FC2BHP005.merged.anno.Cpd4.d19.temporal, project="Project3Cpd4", dir="", files=F)
+
+# -------------
+# Scatterplot
+# -------------
+scatter.path <- "/data/cbadger/CABA-RNAseq-N247/Scatter/Project3/"
+
+# Cpd4-Day19, Day19-Day16
+myset <- Project3Cpd4.CtrlDay19.CtrlDay16.vs.Cpd4Day19.CtrlDay19.scatterset
+# Custom Colors
+diff.colors <- c("#f2b35b","gray","black","#388eb9")
+# Legend
+marks <- unique(myset[,"data.marks"])
+legend <- marks[grepl("X Only", marks)]
+legend <- c(legend, marks[grepl("X,Y Both", marks)])
+legend <- c(legend, marks[grepl("X,Y Reverse", marks)])
+legend <- c(legend, marks[grepl("Y Only", marks)])
+names(diff.colors) <- legend
+
+# Selgenes
+selgenes <- c("Dgat2","Has1","Nr4a3","Rab15","Ddit4","Prkag2","Dtna","Ptprr","Hpgds","Sgms2","Rnf180","Sox9","Scrib","Fzd5","Celsr1","Tcf7","Ptgdr","Ptger2","Ptger4","Tent5a","Cyp27b1","Pdgfa","Csf3","P2ry2","Myocd","Cyp26a1","Dhrs3","Bco1","Lrat","Il4ra","Nr4a3","Apob")
+
+# Scatterplot
+scatter_plot(xval=myset[,1], yval=myset[,2], colorby = myset[,3],
+             xlim=c(-8,8), ylim=c(-8,8),
+             xlab="Log2FC Veh.D19-vs-Veh.D16\n(D19-vs-D16)",
+             ylab="(Cpd4-vs-D19)\nLog2FC Cpd4.D19-vs-Veh.D19",
+             main="Cpd4.D19-vs-Veh.D19 and Veh.D19-vs-Veh.D16",
+             na.val=0, na.rm=T,
+             colors=diff.colors, repelcol="black",
+             show_labels=selgenes, labels=rownames(myset),
+             textrepel=F, regress=F, diagline="neg",
+             cor=F, repelsize=4, repeldir="both",
+             repelxlim=c(-6.5,5.5), repelylim=c(-2.5,5.5),
+             maxoverlaps=Inf)
+
+# High Res PNG -- no text repel
+ggsave(
+  paste0(scatter.path, "VehD19-vs-VehD16_vs_Cpd4D19-vs-VehD19_FC2BHP005_scatter_300res.png"),
+  scatter_plot(xval=myset[,1], yval=myset[,2], colorby = myset[,3],
+               xlim=c(-8,8), ylim=c(-8,8),
+               xlab="Log2FC Veh.D19-vs-Veh.D16\n(D19-vs-D16)",
+               ylab="(Cpd4-vs-D19)\nLog2FC Cpd4.D19-vs-Veh.D19",
+               main="Cpd4.D19-vs-Veh.D19 and Veh.D19-vs-Veh.D16",
+               na.val=0, na.rm=T,
+               colors=diff.colors, repelcol="black",
+               show_labels=selgenes, labels=rownames(myset),
+               textrepel=F, regress=F, diagline="neg",
+               cor=F, repelsize=4, repeldir="both",
+               maxoverlaps=Inf),
+  width = 7.5,
+  height = 6.0,
+  dpi = 300
+)
+# High Res PNG -- text repel
+ggsave(
+  paste0(scatter.path, "VehD19-vs-VehD16_vs_Cpd4D19-vs-VehD19_FC2BHP005_scatter_300res_textrepel.png"),
+  scatter_plot(xval=myset[,1], yval=myset[,2], colorby = myset[,3],
+               xlim=c(-8,8), ylim=c(-8,8),
+               xlab="Log2FC Veh.D19-vs-Veh.D16\n(D19-vs-D16)",
+               ylab="(Cpd4-vs-D19)\nLog2FC Cpd4.D19-vs-Veh.D19",
+               main="Cpd4.D19-vs-Veh.D19 and Veh.D19-vs-Veh.D16",
+               na.val=0, na.rm=T,
+               colors=diff.colors, repelcol="black",
+               show_labels=selgenes, labels=rownames(myset),
+               textrepel=T, regress=F, diagline="neg",
+               cor=F, repelsize=4, repeldir="both",
+               repelxlim=c(-7,7), repelylim=c(-7,7),
+               maxoverlaps=Inf),
+  width = 7.5,
+  height = 6.0,
+  dpi = 300
+)
+
+# PDF Version -- no text repel
+pdf(file = paste0(scatter.path, "VehD19-vs-VehD16_vs_Cpd4D19-vs-VehD19_FC2BHP005_scatter.pdf"), width=7.5, height=6.0)
+scatter_plot(xval=myset[,1], yval=myset[,2], colorby = myset[,3],
+             xlim=c(-8,8), ylim=c(-8,8),
+             xlab="Log2FC Veh.D19-vs-Veh.D16\n(D19-vs-D16)",
+             ylab="(Cpd4-vs-D19)\nLog2FC Cpd4.D19-vs-Veh.D19",
+             main="Cpd4.D19-vs-Veh.D19 and Veh.D19-vs-Veh.D16",
+             na.val=0, na.rm=T,
+             colors=diff.colors, repelcol="black",
+             show_labels=selgenes, labels=rownames(myset),
+             textrepel=F, regress=F, diagline="neg",
+             cor=F, repelsize=4, repeldir="both",
+             maxoverlaps=Inf)
+dev.off()
+
+# PDF Version -- text repel
+pdf(file = paste0(scatter.path, "VehD19-vs-VehD16_vs_Cpd4D19-vs-VehD19_FC2BHP005_scatter_textrepel.pdf"), width=7.5, height=6.0)
+scatter_plot(xval=myset[,1], yval=myset[,2], colorby = myset[,3],
+             xlim=c(-8,8), ylim=c(-8,8),
+             xlab="Log2FC Veh.D19-vs-Veh.D16\n(D19-vs-D16)",
+             ylab="(Cpd4-vs-D19)\nLog2FC Cpd4.D19-vs-Veh.D19",
+             main="Cpd4.D19-vs-Veh.D19 and Veh.D19-vs-Veh.D16",
+             na.val=0, na.rm=T,
+             colors=diff.colors, repelcol="black",
+             show_labels=selgenes, labels=rownames(myset),
+             textrepel=T, regress=F, diagline="neg",
+             cor=F, repelsize=4, repeldir="both",
+             repelxlim=c(-7,7), repelylim=c(-7,7),
+             maxoverlaps=Inf)
+dev.off()
+```
+
+### Heatmap: Input Datasets
+```{r}
+# -------------------
+# TPM Gene Annotated
+# -------------------
+tpm.anno <- function(tpm = NULL, geneanno = NULL) {
+  geneanno.red <- geneanno[,c(1,2)] # Reduced gene annotation
+  tpm.anno <- merge(geneanno.red, tpm, by = 0) # Annotating TPM
+  tpm.anno <- tpm.anno[!duplicated(tpm.anno$gene_name), ] # Removing duplicate gene names
+  rownames(tpm.anno) <- tpm.anno$gene_name # Genes as Rownames
+  tpm.anno$Row.names <- NULL # Formatting
+  tpm.anno$gene_name <- NULL # Formatting
+  tpm.anno$description <- NULL # Formatting
+  return(tpm.anno)
+}
+# ----------------
+# All Samples TPM
+# ----------------
+Project1FC0BHP005.tpm.genes <- tpm.anno(tpm = Project1FC0BHP005.tpm.unfiltered, geneanno = Project1FC0BHP005.geneanno)
+
+# ----------------
+# tissue1 TPM
+# ----------------
+# Reduced Annotation
+Project1FC0BHP005.sample.anno.red.tissue1 <- Project1FC0BHP005.sample.anno[Project1FC0BHP005.sample.anno$Group %in% c("tissue1_SHAM1_D16","tissue1_Vehicle1_D19pre","tissue1_Cpd1.11mg_D19pre","tissue1_Cpd1.110mg_D19pre","tissue1_SHAM2_D16","tissue1_Vehicle2_D19pre","tissue1_RefCpd.0.5mg_D19pre","tissue1_RefCpd.5.0mg_D19pre"), ]
+# Reduced TPM
+Project1FC0BHP005.tpm.genes.tissue1 <- Project1FC0BHP005.tpm.genes[,colnames(Project1FC0BHP005.tpm.genes) %in% Project1FC0BHP005.sample.anno.red.tissue1$Sample]
+
+# Ordering Sample Annotation
+Project1FC0BHP005.sample.anno.groups.tissue1 <- Project1FC0BHP005.sample.anno.red.tissue1 %>% arrange(factor(Group, levels = c("tissue1_SHAM1_D16","tissue1_Vehicle1_D19pre","tissue1_Cpd1.11mg_D19pre","tissue1_Cpd1.110mg_D19pre","tissue1_SHAM2_D16","tissue1_Vehicle2_D19pre","tissue1_RefCpd.0.5mg_D19pre","tissue1_RefCpd.5.0mg_D19pre")))
+# Ordered TPM
+Project1FC0BHP005.tpm.genes.tissue1.ord <- select(Project1FC0BHP005.tpm.genes.tissue1,unlist(Project1FC0BHP005.sample.anno.groups.tissue1$Sample))
+
+# Column Annotation
+Project1FC0BHP005.colanno.tissue1 <- Project1FC0BHP005.sample.anno.groups.tissue1[,c(1,4)]
+rownames(Project1FC0BHP005.colanno.tissue1) <- Project1FC0BHP005.colanno.tissue1$Sample
+Project1FC0BHP005.colanno.tissue1$Sample <- NULL
+colnames(Project1FC0BHP005.colanno.tissue1)[1] <- "Group"
+Project1FC0BHP005.colanno.tissue1$Group <- factor(Project1FC0BHP005.colanno.tissue1$Group, levels = c("tissue1_SHAM1_D16","tissue1_Vehicle1_D19pre","tissue1_Vehicle1_D19post","tissue1_Cpd1.11mg_D19pre","tissue1_Cpd1.110mg_D19pre","tissue1_SHAM2_D16","tissue1_Vehicle2_D19pre","tissue1_Vehicle2_D19post","tissue1_RefCpd.0.5mg_D19pre","tissue1_RefCpd.5.0mg_D19pre"))
+Project1FC0BHP005.colanno.tissue1$Treatment <- c(rep("Cpd1", 33), rep("RefCpdmethacin", 31))
+
+# ----------------
+# tissue2 TPM
+# ----------------
+# Reduced Annotation
+Project1FC0BHP005.sample.anno.red.tissue2 <- Project1FC0BHP005.sample.anno[Project1FC0BHP005.sample.anno$Group %in% c("tissue2_SHAM1_D16","tissue2_Vehicle1_D19pre","tissue2_Cpd1.11mg_D19pre","tissue2_Cpd1.110mg_D19pre","tissue2_SHAM2_D16","tissue2_Vehicle2_D19pre","tissue2_RefCpd.0.5mg_D19pre","tissue2_RefCpd.5.0mg_D19pre"), ]
+# Reduced TPM
+Project1FC0BHP005.tpm.genes.tissue2 <- Project1FC0BHP005.tpm.genes[,colnames(Project1FC0BHP005.tpm.genes) %in% Project1FC0BHP005.sample.anno.red.tissue2$Sample]
+
+# Ordering Sample Annotation
+Project1FC0BHP005.sample.anno.groups.tissue2 <- Project1FC0BHP005.sample.anno.red.tissue2 %>% arrange(factor(Group, levels = c("tissue2_SHAM1_D16","tissue2_Vehicle1_D19pre","tissue2_Cpd1.11mg_D19pre","tissue2_Cpd1.110mg_D19pre","tissue2_SHAM2_D16","tissue2_Vehicle2_D19pre","tissue2_RefCpd.0.5mg_D19pre","tissue2_RefCpd.5.0mg_D19pre")))
+# Ordered TPM
+Project1FC0BHP005.tpm.genes.tissue2.ord <- select(Project1FC0BHP005.tpm.genes.tissue2,unlist(Project1FC0BHP005.sample.anno.groups.tissue2$Sample))
+
+# Column Annotation
+Project1FC0BHP005.colanno.tissue2 <- Project1FC0BHP005.sample.anno.groups.tissue2[,c(1,4)]
+rownames(Project1FC0BHP005.colanno.tissue2) <- Project1FC0BHP005.colanno.tissue2$Sample
+Project1FC0BHP005.colanno.tissue2$Sample <- NULL
+colnames(Project1FC0BHP005.colanno.tissue2)[1] <- "Group"
+Project1FC0BHP005.colanno.tissue2$Group <- factor(Project1FC0BHP005.colanno.tissue2$Group, levels = c("tissue2_SHAM1_D16","tissue2_Vehicle1_D19pre","tissue2_Cpd1.11mg_D19pre","tissue2_Cpd1.110mg_D19pre","tissue2_SHAM2_D16","tissue2_Vehicle2_D19pre","tissue2_RefCpd.0.5mg_D19pre","tissue2_RefCpd.5.0mg_D19pre"))
+Project1FC0BHP005.colanno.tissue2$Treatment <- c(rep("Cpd1", 31), rep("RefCpdmethacin", 31))
+
+# ----------------
+# Transformation
+# ----------------
+# Log2 Transformation
+Project1FC0BHP005.tpm.genes.tissue1.log2 <- log2(Project1FC0BHP005.tpm.genes.tissue1.ord+0.1)
+Project1FC0BHP005.tpm.genes.tissue2.log2 <- log2(Project1FC0BHP005.tpm.genes.tissue2.ord+0.1)
+```
+
+### Heatmap: Prostaglandin (tissue1)
+```{r}
+# -------------
+# Input Genes
+# -------------
+# Prostaglandin Pathway Genes (from Metascape)
+  # tissue1, Cpd1High, D19pre, Upregulated
+prostaglandin <- c("Ptgdr","Ptger2","Ptger4","Fbxo32","Scnn1b","Cyp27b1", "Ptgfr")
+  # Ptgfr added
+
+# ------------------
+# Heatmap
+# Prostaglandin (tissue1)
+# ------------------
+# Log2 Transformed Heatmap
+pheatmap(Project1FC0BHP005.tpm.genes.tissue1.log2[prostaglandin, ],
+         cluster_cols = FALSE, cluster_rows = TRUE, 
+         main="Prostaglandin Response Genes", 
+         cellheight = 18, scale = "row", gaps_col=33,
+         annotation_col = Project1FC0BHP005.colanno.tissue1)
+
+# File: Log2 Transformed, Row Scaled
+path.string <- "/data/cbadger/CABA-RNAseq-N247/Heatmap/"
+pheatmap(Project1FC0BHP005.tpm.genes.tissue1.log2[prostaglandin, ],
+         cluster_cols = FALSE, cluster_rows = TRUE,
+         main="Prostaglandin Response Genes",
+         scale = "row", cellheight = 18, gaps_col=33,
+         annotation_col = Project1FC0BHP005.colanno.tissue1,
+         filename=paste0(path.string,"tissue1_Prostaglandin_heatmap_log2_scalerow.png"))
+
+# File: Log2 Transformed, No Row Scaling
+path.string <- "/data/cbadger/CABA-RNAseq-N247/Heatmap/"
+pheatmap(Project1FC0BHP005.tpm.genes.tissue1.log2[prostaglandin, ],
+         cluster_cols = FALSE, cluster_rows = TRUE,
+         main="Prostaglandin Response Genes",
+         cellheight = 18, gaps_col=33,
+         annotation_col = Project1FC0BHP005.colanno.tissue1,
+         filename=paste0(path.string,"tissue1_Prostaglandin_heatmap_log2_noscale.png"))
+```
+
+### Heatmap: Inflammatory (tissue1)
+```{r}
+# --------------------
+# Input Genes
+# --------------------
+# from Metascape (Top 12 of 54)
+  # tissue1, RefCpdHigh, D19pre, Upregulated
+inflammatory <- c("Acod1","Card9","Cd74","Cebpb","Il33","Il6","Mdk","Mmp8","Nlrp3","Ptger4","S100a8","S100a9")
+
+# -----------------
+# Heatmap
+# Inflammatory (tissue1)
+# -----------------
+# Log2 Transformed Heatmap
+pheatmap(Project1FC0BHP005.tpm.genes.tissue1.log2[inflammatory, ],
+         cluster_cols = FALSE, cluster_rows = TRUE, 
+         main="Inflammatory Response Genes",
+         cellheight = 11, scale = "row", gaps_col=33,
+         annotation_col = Project1FC0BHP005.colanno.tissue1)
+
+# File: Log2 Transformed, Row Scaled
+path.string <- "/data/cbadger/CABA-RNAseq-N247/Heatmap/"
+pheatmap(Project1FC0BHP005.tpm.genes.tissue1.log2[inflammatory, ],
+         cluster_cols = FALSE, cluster_rows = TRUE, 
+         main="Inflammatory Response Genes", 
+         scale = "row", cellheight = 11, gaps_col=33, 
+         annotation_col = Project1FC0BHP005.colanno.tissue1,
+         filename=paste0(path.string,"tissue1_Inflammatory_heatmap_log2_scalerow.png"))
+
+# File: Log2 Transformed, No Row Scaling
+path.string <- "/data/cbadger/CABA-RNAseq-N247/Heatmap/"
+pheatmap(Project1FC0BHP005.tpm.genes.tissue1.log2[inflammatory, ],
+         cluster_cols = FALSE, cluster_rows = TRUE, 
+         main="Inflammatory Response Genes", 
+         cellheight = 11, gaps_col=33, 
+         annotation_col = Project1FC0BHP005.colanno.tissue1,
+         filename=paste0(path.string,"tissue1_Inflammatory_heatmap_log2_noscale.png"))
+```
+
+### Heatmap: ECM (tissue2)
+```{r}
+# --------------------
+# Input Genes
+# --------------------
+# Extracellular Matrix Genes: Top 18 of 51
+# tissue2, D19pre, Upregulated in RefCpd, Downregulated in Cpd1
+ecm <- c("Adamts2","Adamts4","Cav1","Col4a4","Crtap","Dpt","Fbln2","Grem1","Loxl1","Ltbp3","Ltbp4","Lum","Mmp10","Mmp13","Mmp3","Mmp8","Scx","Vtn")
+
+
+# -----------------
+# Heatmap
+# ECM (tissue2)
+# -----------------
+# Log2 Transformed Heatmap
+pheatmap(Project1FC0BHP005.tpm.genes.tissue2.log2[ecm, ],
+         cluster_cols = FALSE, cluster_rows = TRUE, 
+         main="Extracellular Matrix Genes",
+         cellheight = 10, scale = "row", gaps_col=31,
+         annotation_col = Project1FC0BHP005.colanno.tissue2)
+
+# File: Log2 Transformed, Row Scaled
+path.string <- "/data/cbadger/CABA-RNAseq-N247/Heatmap/"
+pheatmap(Project1FC0BHP005.tpm.genes.tissue2.log2[ecm, ],
+         cluster_cols = FALSE, cluster_rows = TRUE, 
+         main="Extracellular Matrix Genes", 
+         scale = "row", cellheight = 10, gaps_col=31, 
+         annotation_col = Project1FC0BHP005.colanno.tissue2,
+         filename=paste0(path.string,"tissue2_ECM_heatmap_log2_scalerow.png"))
+
+# File: Log2 Transformed, No Row Scaling
+path.string <- "/data/cbadger/CABA-RNAseq-N247/Heatmap/"
+pheatmap(Project1FC0BHP005.tpm.genes.tissue2.log2[ecm, ],
+         cluster_cols = FALSE, cluster_rows = TRUE, 
+         main="Extracellular Matrix Genes", 
+         cellheight = 10, gaps_col=31, 
+         annotation_col = Project1FC0BHP005.colanno.tissue2,
+         filename=paste0(path.string,"tissue2_ECM_heatmap_log2_noscale.png"))
+```
+
+### Heatmap: Inflammatory (tissue2)
+```{r}
+# See if inflammatory genes are any different in tissue2, otherwise use same list as in tissue1
+# --------------------
+# Input Genes
+# --------------------
+# tissue2, RefCpdHigh, D19pre, Upregulated
+inflammatory.tissue2 <- c("Ccl2","Ccl21a","Ccl7","Ccr5","Csf1","Cxcl1","Cxcl2","Cxcl3","Cxcl5","Icam1","Il11","Il1b","Il6","Il6st","Itgam","S100a8","S100a9")
+
+# -----------------
+# Heatmap
+# Inflammatory (tissue2)
+# -----------------
+# Log2 Transformed Heatmap
+pheatmap(Project1FC0BHP005.tpm.genes.tissue2.log2[inflammatory.tissue2, ],
+         cluster_cols = FALSE, cluster_rows = TRUE, 
+         main="Inflammatory Response Genes",
+         cellheight = 10, scale = "row", gaps_col=31,
+         annotation_col = Project1FC0BHP005.colanno.tissue2)
+
+# File: Log2 Transformed, Row Scaled
+path.string <- "/data/cbadger/CABA-RNAseq-N247/Heatmap/"
+pheatmap(Project1FC0BHP005.tpm.genes.tissue2.log2[inflammatory.tissue2, ],
+         cluster_cols = FALSE, cluster_rows = TRUE, 
+         main="Inflammatory Response Genes", 
+         scale = "row", cellheight = 10, gaps_col=31, 
+         annotation_col = Project1FC0BHP005.colanno.tissue2,
+         filename=paste0(path.string,"tissue2_Inflammatory_heatmap_log2_scalerow.png"))
+
+# File: Log2 Transformed, No Row Scaling
+path.string <- "/data/cbadger/CABA-RNAseq-N247/Heatmap/"
+pheatmap(Project1FC0BHP005.tpm.genes.tissue2.log2[inflammatory.tissue2, ],
+         cluster_cols = FALSE, cluster_rows = TRUE, 
+         main="Inflammatory Response Genes", 
+         cellheight = 10, gaps_col=31, 
+         annotation_col = Project1FC0BHP005.colanno.tissue2,
+         filename=paste0(path.string,"tissue2_Inflammatory_heatmap_log2_noscale.png"))
+```
+
+
+### Heatmap: Inflammatory and ECM (tissue2)
+```{r}
+# See if inflammatory genes are any different in tissue2, otherwise use same list as in tissue1
+# --------------------
+# Input Genes
+# --------------------
+# ECM and Inflammatory Genes
+ecm.red <- c("Adamts4","Mmp10","Mmp13","Mmp3","Mmp8")
+inflammatory.tissue2 <- c("Ccl2","Ccl21a","Ccl7","Ccr5","Csf1","Cxcl1","Cxcl2","Cxcl3","Cxcl5","Icam1","Il11","Il1b","Il6","Il6st","Itgam","S100a8","S100a9")
+heat.genes.tissue2 <- c(ecm.red, inflammatory.tissue2)
+
+# -----------------
+# Heatmap
+# ECM and Inflam (tissue2)
+# -----------------
+# Log2 Transformed Heatmap
+pheatmap(Project1FC0BHP005.tpm.genes.tissue2.log2[heat.genes.tissue2, ],
+         cluster_cols = FALSE, cluster_rows = FALSE, 
+         main="ECM and Inflammatory Genes",
+         cellheight = 10, scale = "row", gaps_col=31,
+         annotation_col = Project1FC0BHP005.colanno.tissue2)
+
+# File: Log2 Transformed, Row Scaled
+path.string <- "/data/cbadger/CABA-RNAseq-N247/Heatmap/"
+pheatmap(Project1FC0BHP005.tpm.genes.tissue2.log2[heat.genes.tissue2, ],
+         cluster_cols = FALSE, cluster_rows = FALSE, 
+         main="ECM and Inflammatory Genes", 
+         scale = "row", cellheight = 10, gaps_col=31, 
+         annotation_col = Project1FC0BHP005.colanno.tissue2,
+         filename=paste0(path.string,"tissue2_ECM_Inflam_heatmap_log2_scalerow.png"))
+
+# File: Log2 Transformed, No Row Scaling
+path.string <- "/data/cbadger/CABA-RNAseq-N247/Heatmap/"
+pheatmap(Project1FC0BHP005.tpm.genes.tissue2.log2[heat.genes.tissue2, ],
+         cluster_cols = FALSE, cluster_rows = FALSE, 
+         main="ECM and Inflammatory Genes", 
+         cellheight = 10, gaps_col=31, 
+         annotation_col = Project1FC0BHP005.colanno.tissue2,
+         filename=paste0(path.string,"tissue2_ECM_Inflam_heatmap_log2_noscale.png"))
+
+```
+
+
+### Lineplot Input and Function
+```{r}
+# -----------
+# TPM Input
+# -----------
+Project1FC0BHP005.tpm.genes <- tpm.anno(tpm = Project1FC0BHP005.tpm.unfiltered, geneanno = Project1FC0BHP005.geneanno)
+
+# -------------
+# Sample Anno
+# -------------
+library(stringr)
+# Reduced Sample Annotation
+Project1FC0BHP005.sample.anno.red <- Project1FC0BHP005.sample.anno[,c(1,4)]
+# Splitting Treatment and Time
+Project1FC0BHP005.sample.anno.red[c('Tissue', 'Treatment', 'Time')] <- str_split_fixed(Project1FC0BHP005.sample.anno.red$Group, '_', 3)
+
+Project1FC0BHP005.sample.anno.red$Treatment <- gsub("SHAM", "Vehicle", Project1FC0BHP005.sample.anno.red$Treatment)
+Project1FC0BHP005.sample.anno.red$Treatment <- gsub("Vehicle1", "Vehicle", Project1FC0BHP005.sample.anno.red$Treatment)
+Project1FC0BHP005.sample.anno.red$Treatment <- gsub("Vehicle2", "Vehicle", Project1FC0BHP005.sample.anno.red$Treatment)
+
+# Remove Time D19post
+Project1FC0BHP005.sample.anno.red <- Project1FC0BHP005.sample.anno.red[Project1FC0BHP005.sample.anno.red$Time!="D19post",]
+# Remove Treatment Cpd1 11mg
+Project1FC0BHP005.sample.anno.red <- Project1FC0BHP005.sample.anno.red[Project1FC0BHP005.sample.anno.red$Treatment!="Cpd1.11mg",]
+# Remove Treatment Cpd1 33mg
+Project1FC0BHP005.sample.anno.red <- Project1FC0BHP005.sample.anno.red[Project1FC0BHP005.sample.anno.red$Treatment!="Cpd1.33mg",]
+# Remove Treatment RefCpd 0.5mg
+Project1FC0BHP005.sample.anno.red <- Project1FC0BHP005.sample.anno.red[Project1FC0BHP005.sample.anno.red$Treatment!="RefCpd.0.5mg",]
+# Remove Treatment RefCpd 1.6mg
+Project1FC0BHP005.sample.anno.red <- Project1FC0BHP005.sample.anno.red[Project1FC0BHP005.sample.anno.red$Treatment!="RefCpd.1.6mg",]
+
+# tissue1 only set
+Project1FC0BHP005.sample.anno.red.tissue1 <- Project1FC0BHP005.sample.anno.red[Project1FC0BHP005.sample.anno.red$Tissue=="tissue1",]
+# tissue2 only set
+Project1FC0BHP005.sample.anno.red.tissue2 <- Project1FC0BHP005.sample.anno.red[Project1FC0BHP005.sample.anno.red$Tissue=="tissue2",]
+```
+
+### Lineplot: (tissue1) Prostaglandin & Inflammatory Genes
+```{r}
+# -----------
+# Input Genes
+# -----------
+# Prostaglandin Genes
+prost <- c("Ptgdr", "Ptger2", "Ptger4")
+# Inflammatory Genes
+infl.tissue1 <- c("Il6", "Mmp8")
+
+genes <- c(prost, infl.tissue1)
+
+# -----------
+# Lineplots
+# -----------
+line.path <- "/data/cbadger/CABA-RNAseq-N247/Lineplot/"
+
+# Example Lineplot
+gene <- "Ptgfr"
+name <- toupper(gene)
+lineplot(tpm.data=Project1FC0BHP005.tpm.genes,
+         sample.anno=Project1FC0BHP005.sample.anno.red.tissue1,
+         gene=gene, log2=T, main=paste0(name, " in tissue1"))
+ggsave(paste0(line.path, name, "_Lineplot_tissue1.png"), width = 8, height = 6)
+
+# Example Lineplot (ylims)
+gene <- "Il6"
+name <- toupper(gene)
+lineplot(tpm.data=Project1FC0BHP005.tpm.genes,
+         sample.anno=Project1FC0BHP005.sample.anno.red.tissue1,
+         gene=gene, log2=T, main=paste0(name, " in tissue1"), ylims=c(-8,8))
+ggsave(paste0(line.path, name, "_Lineplot_tissue1_ylimit.png"), width = 8, height = 6)
+
+# All Lineplots
+for (gene in genes) {
+  name <- toupper(gene)
+  lineplot(tpm.data=Project1FC0BHP005.tpm.genes,
+         sample.anno=Project1FC0BHP005.sample.anno.red.tissue1,
+         gene=gene, log2=T, main=paste0(name, " in tissue1"),
+         ylims=NULL)
+  ggsave(paste0(line.path, name, "_Lineplot_tissue1.png"), width = 8, height = 6)
+}
+
+# Shared Limit Lineplots
+for (gene in genes) {
+  name <- toupper(gene)
+  lineplot(tpm.data=Project1FC0BHP005.tpm.genes,
+         sample.anno=Project1FC0BHP005.sample.anno.red.tissue1,
+         gene=gene, log2=T, main=paste0(name, " in tissue1"),
+         ylims=c(-8,8))
+  ggsave(paste0(line.path, name, "_Lineplot_tissue1_ylimit.png"), width = 8, height = 6)
+}
+
+ggplot(tpm.final, aes(x=Time, y=TPM, group=Treatment, color=Treatment)) + 
+  geom_line(size=1.5) +
+  geom_errorbar(aes(ymin=TPM-sd, ymax=TPM+sd),
+                width=.1,position=position_dodge(0.05),
+                color="black") + 
+  geom_point(size=3)
+```
+
+### Lineplot: (tissue2) ECM & Inflammatory Genes
+```{r}
+# -----------
+# Input Genes
+# -----------
+# ECM Genes
+ecm <- c("Mmp3", "Col4a4")
+# Inflammatory Genes
+infl.tissue2 <- c("Il11", "Il6")
+
+genes <- c(ecm, infl.tissue2)
+
+# -----------
+# Lineplots
+# -----------
+line.path <- "/data/cbadger/CABA-RNAseq-N247/Lineplot/"
+
+# Example Lineplot
+gene <- "Il6"
+name <- toupper(gene)
+lineplot(tpm.data=Project1FC0BHP005.tpm.genes,
+         sample.anno=Project1FC0BHP005.sample.anno.red.tissue2,
+         gene=gene, log2=T, main=paste0(name, " in tissue2"))
+ggsave(paste0(line.path, name, "_Lineplot_tissue2.png"), width = 8, height = 6)
+
+# Example Lineplot (ylims)
+gene <- "Il6"
+name <- toupper(gene)
+lineplot(tpm.data=Project1FC0BHP005.tpm.genes,
+         sample.anno=Project1FC0BHP005.sample.anno.red.tissue2,
+         gene=gene, log2=T, main=paste0(name, " in tissue2"), ylims=c(-8,8))
+ggsave(paste0(line.path, name, "_Lineplot_tissue2_ylimit.png"), width = 8, height = 6)
+
+# All Lineplots
+for (gene in genes) {
+  name <- toupper(gene)
+  lineplot(tpm.data=Project1FC0BHP005.tpm.genes,
+         sample.anno=Project1FC0BHP005.sample.anno.red.tissue2,
+         gene=gene, log2=T, main=paste0(name, " in tissue2"),
+         ylims=NULL)
+  ggsave(paste0(line.path, name, "_Lineplot_tissue2.png"), width = 8, height = 6)
+}
+
+# Shared Limit Lineplots
+for (gene in genes) {
+  name <- toupper(gene)
+  lineplot(tpm.data=Project1FC0BHP005.tpm.genes,
+         sample.anno=Project1FC0BHP005.sample.anno.red.tissue2,
+         gene=gene, log2=T, main=paste0(name, " in tissue2"),
+         ylims=c(-8,8))
+  ggsave(paste0(line.path, name, "_Lineplot_tissue2_ylimit.png"), width = 8, height = 6)
+}
+```
+
+### VolcanoPlots: tissue1 Cpd1H, tissue1 RefCpdH, tissue2 Cpd1H, tissue2 RefCpdH
+```{r}
+# --------
+# tissue1 Cpd1
+# --------
+# DESeq2 Results
+tissue1.Cpd1h.veh1.d19.volc <- read.delim(file="/data/cbadger/CABA-RNAseq-N247/Inputs/VolcanoInput/tissue1_Cpd1.110mg_D19pre_vs_tissue1_Vehicle1_D19pre/gene.results.merged.count.DESeq2.Wald.FC0.0.BH.P0.05.txt",quote="",header=T,sep="\t",row.names=1)
+
+# Cpd1 Labels: TNL/Pathway Gene Labels
+node.genes <- c("Sox9","Scrib","Fzd5","Celsr1","Tcf7","Ptgdr","Ptger2","Ptger4","Tent5a","Cyp27b1","Pdgfa","Csf3","P2ry2","Myocd","Cyp26a1","Dhrs3","Bco1","Lrat","Il4ra","Nr4a3","Apob")
+tnl.rev <- c("Dgat2","Has1","Nr4a3","Rab15","Ddit4","Prkag2","Dtna","Ptprr","Hpgds","Sgms2","Rnf180")
+tissue1.Cpd1.labels <- c(node.genes, tnl.rev)
+
+# Volcano Plot
+volcano.tissue1.Cpd1 <- volcano_helper(data = tissue1.Cpd1h.veh1.d19.volc,
+                          anno = Project1FC0BHP005.geneanno,
+                          labels = tissue1.Cpd1.labels,
+                          fc = "Log2FC.tissue1_Cpd1.110mg_D19pre.vs.tissue1_Vehicle1_D19pre",
+                          q = "BH.adjusted.p.values", sig = NA,
+                          xlab = "Log2FC tissue1_Cpd1_44mpk_D19pre vs tissue1_Veh1_D19pre",
+                          ylab = "-Log10 BH adjusted p-values",
+                          fc_cutoff = 0, q_cutoff = 0.05, 
+                          xlim = c(-3,6),ylim = c(0,7),
+                          main = "Cpd1")
+volcano.tissue1.Cpd1
+
+# Export
+volcano.path <- "/data/cbadger/CABA-RNAseq-N247/Volcano/"
+png(paste0(volcano.path, "tissue1_Cpd1_44mpk_D19pre-vs-tissue1_Veh1_D19pre_volcano.png"), width = 7, height = 6, units = "in", res = 1200)
+volcano.tissue1.Cpd1
+dev.off()
+
+# --------
+# tissue1 RefCpd
+# --------
+# DESeq2 Results
+tissue1.RefCpdh.veh2.d19.volc <- read.delim(file="/data/cbadger/CABA-RNAseq-N247/Inputs/VolcanoInput/tissue1_RefCpd.5.0mg_D19pre_vs_tissue1_Vehicle2_D19pre/gene.results.merged.count.DESeq2.Wald.FC0.0.BH.P0.05.txt",quote="",header=T,sep="\t",row.names=1)
+
+# RefCpdmethacin Labels: Prost Resp. and Inflammatory
+prostaglandin <- c("Ptgdr","Ptger2","Ptger4","Fbxo32","Scnn1b","Cyp27b1", "Ptgfr")
+inflammatory <- c("Acod1","Card9","Cd74","Cebpb","Il33","Il6","Mdk","Mmp8","Nlrp3","Ptger4","S100a8","S100a9")
+tissue1.RefCpd.labels <- c(prostaglandin, inflammatory)
+
+# Volcano Plot
+volcano.tissue1.RefCpd <- volcano_helper(data = tissue1.RefCpdh.veh2.d19.volc,
+                          anno = Project1FC0BHP005.geneanno,
+                          labels = tissue1.RefCpd.labels,
+                          fc = "Log2FC.tissue1_RefCpd.5.0mg_D19pre.vs.tissue1_Vehicle2_D19pre",
+                          q = "BH.adjusted.p.values", sig = NA,
+                          xlab = "Log2FC tissue1_RefCpd_5.0mpk_D19pre vs tissue1_Veh2_D19pre",
+                          ylab = "-Log10 BH adjusted p-values",
+                          fc_cutoff = 0, q_cutoff = 0.05, 
+                          xlim = c(-3,5),ylim = c(0,6),
+                          main = "RefCpdmethacin")
+volcano.tissue1.RefCpd
+
+# Export
+volcano.path <- "/data/cbadger/CABA-RNAseq-N247/Volcano/"
+png(paste0(volcano.path, "tissue1_RefCpd_5.0mpk_D19pre-vs-tissue1_Veh2_D19pre_volcano.png"), width = 7, height = 6, units = "in", res = 1200)
+volcano.tissue1.RefCpd
+dev.off()
+
+# ----------
+# tissue2 Cpd1
+# ----------
+# Inflammatory Pathway DEGs
+inf.tissue2.all <- c("Adora1","Bdkrb1","C1ra","C1s2","Ccl2","Ccl21a","Ccl7","Ccr5","Chil1","Chil3","Chst4","Clu","Csf1","Csf2rb2","Cxcl1","Cxcl2","Cxcl3","Cxcl5","F13a1","Gm13304","Hp","Icam1","Il11","Il1b","Il6","Il6st","Itgam","Itgb3","Lcn2","Mmp13","Mmp3","Naip1","Nos2","Reg3b","S100a8","S100a9","Selp","Serpina3n","Sting1","Timp1")
+# ECM Pathway DEGs
+ecm.tissue2.all <- c("Adamts15","Adamts2","Adamts4","Adamtsl1","Capn5","Cav1","Cav2","Ccdc80","Cgnl1","Col4a4","Crtap","Dcn","Dpt","Emp2","Fbln2","Fgf2","Gas7","Ghrl","Grem1","Gsn","Icam1","Itga5","Itgb3","Krt14","Krt7","Loxl1","Ltbp3","Ltbp4","Lum","Mfap5","Mmp10","Mmp13","Mmp3","Mmp8","Pcolce","Pcolce2","Ptx3","Rnd1","Scx","Slc39a8","Sorbs3","Sparc","Spock2","Sulf1","Timp1","Tnfrsf11b","Trf","Vill","Vim","Vit","Vtn")
+tissue2.genes <- c(inf.tissue2.all, ecm.tissue2.all)
+# Public1 Rat Small Intestine
+Public1 <- c("Cxcl2","Timp1","Mt1","Ttr","Npm1","Il1a","Tgm1","Apol11a","Clca5","Mmp3","S100a9","Mmp10","Plat","Mgp","Serpina3n","Cxcl6","Mmp12","Plet1","Ccl2","Ctsl","Ripk3","Ccl3","Adm","Ifit3","C3","Anxa1","Tnip3","Prss22","Lcn2","Tifa","Ccl7","Il1b","Mmp13","F3")
+  # intersect(tissue2.genes, Public1)
+# Intersection of Public1 with Inflamm/ECM genes
+tissue2.Cpd1.labels <- intersect(tissue2.genes, Public1)
+tissue2.RefCpd.labels <- intersect(tissue2.genes, Public1)
+
+# DESeq2 Results
+tissue2.Cpd1h.veh1.d19.volc <- read.delim(file="/data/cbadger/CABA-RNAseq-N247/Inputs/VolcanoInput/tissue2_Cpd1.110mg_D19pre_vs_tissue2_Vehicle1_D19pre/gene.results.merged.count.DESeq2.Wald.FC0.0.BH.P0.05.txt",quote="",header=T,sep="\t",row.names=1)
+
+# Volcano Plot
+volcano.tissue2.Cpd1 <- volcano_helper(data = tissue2.Cpd1h.veh1.d19.volc,
+                          anno = Project1FC0BHP005.geneanno,
+                          labels = tissue2.Cpd1.labels,
+                          fc = "Log2FC.tissue2_Cpd1.110mg_D19pre.vs.tissue2_Vehicle1_D19pre",
+                          q = "BH.adjusted.p.values", sig = NA,
+                          xlab = "Log2FC tissue2_Cpd1_44mpk_D19pre vs tissue2_Veh1_D19pre",
+                          ylab = "-Log10 BH adjusted p-values",
+                          fc_cutoff = 0, q_cutoff = 0.05, 
+                          xlim = c(-6,3),ylim = c(0,4),
+                          main = "Cpd1")
+volcano.tissue2.Cpd1
+
+# Export
+volcano.path <- "/data/cbadger/CABA-RNAseq-N247/Volcano/"
+png(paste0(volcano.path, "tissue2_Cpd1_44mpk_D19pre-vs-tissue2_Veh1_D19pre_volcano.png"), width = 7, height = 6, units = "in", res = 1200)
+volcano.tissue2.Cpd1
+dev.off()
+
+# ----------
+# tissue2 RefCpd
+# ----------
+# See tissue2 Cpd1 for tissue2.RefCpd.labels
+
+# DESeq2 Results
+tissue2.RefCpdh.veh2.d19.volc <- read.delim(file="/data/cbadger/CABA-RNAseq-N247/Inputs/VolcanoInput/tissue2_RefCpd.5.0mg_D19pre_vs_tissue2_Vehicle2_D19pre/gene.results.merged.count.DESeq2.Wald.FC0.0.BH.P0.05.txt",quote="",header=T,sep="\t",row.names=1)
+
+# Volcano Plot
+volcano.tissue2.RefCpd <- volcano_helper(data = tissue2.RefCpdh.veh2.d19.volc,
+                          anno = Project1FC0BHP005.geneanno,
+                          labels = tissue2.RefCpd.labels,
+                          fc = "Log2FC.tissue2_RefCpd.5.0mg_D19pre.vs.tissue2_Vehicle2_D19pre",
+                          q = "BH.adjusted.p.values", sig = NA,
+                          xlab = "Log2FC tissue2_RefCpd_5.0mpk_D19pre vs tissue2_Veh2_D19pre",
+                          ylab = "-Log10 BH adjusted p-values",
+                          fc_cutoff = 0, q_cutoff = 0.05, 
+                          xlim = c(-5,6),ylim = c(0,18),
+                          main = "RefCpdmethacin")
+volcano.tissue2.RefCpd
+
+# Export
+volcano.path <- "/data/cbadger/CABA-RNAseq-N247/Volcano/"
+png(paste0(volcano.path, "tissue2_RefCpd_5.0mpk_D19pre-vs-tissue2_Veh2_D19pre_volcano.png"), width = 7, height = 6, units = "in", res = 1200)
+volcano.tissue2.RefCpd
+dev.off()
+```
