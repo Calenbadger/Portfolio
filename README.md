@@ -1,4 +1,4 @@
-# Public Portfolio
+# Portfolio: Bioinformatics
 
 ## Bulk-RNAseq
 Scripts provided here are for demonstration of coding competency. Resulting plots are not available to view in the script, but I have copies of many of the exported figures. Please contact me if you need to see the resulting plots.
